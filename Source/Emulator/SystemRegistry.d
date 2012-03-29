@@ -12,7 +12,10 @@ import demu.systems.msx;
 Machine CreateSystem(const(RomInstance)* rom, RomDatabase db, const(char)[] systemID = null)
 {
 	if(systemID == null)
+	{
+		assert(rom.pSystem, "Unknown system for rom " ~ rom.path ~ "!");
 		systemID = rom.pSystem.id;
+	}
 
 	foreach(ref sys; sSystems)
 	{

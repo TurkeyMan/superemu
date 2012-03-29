@@ -47,8 +47,10 @@ struct RomInstance
 
 	string path;
 	uint size;
-	std.datetime.time_t timestamp;
 	uint hash;
+	std.datetime.time_t timestamp;
+
+	string system;
 
 	const(RomDesc)* pDesc;
 	const(SystemDesc)* pSystem;

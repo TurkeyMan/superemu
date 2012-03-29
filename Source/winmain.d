@@ -54,7 +54,7 @@ int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int
 	db = new RomDatabase();
 
 	// find a game
-	RomInstance* rom = db.FindRom("col_junglehunt");
+	RomInstance* rom = db.FindRom("FantasyZone");
 
 	// create the machine
 	Machine machine = CreateSystem(rom, db);

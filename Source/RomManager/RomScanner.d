@@ -25,7 +25,7 @@ RomInstance[] ScanRoms(RomDatabase db, RomInstance[] cache)
 		string system = GuessSystem(path);
 		const(SystemDesc)* pDesc = system ? db.FindSystem(system) : null;
 
-		roms ~= RomInstance( 0, path, size, modified, 0, null, pDesc);
+		roms ~= RomInstance( 0, path, size, 0, modified, system, null, pDesc);
 	}
 
 	foreach(path; romPaths)
