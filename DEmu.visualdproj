@@ -234,6 +234,8 @@
    </Folder>
    <Folder name="Tools">
     <File path="Source\Tools\Util.d" />
+    <File path="Source\Tools\SQLiteDB.d" />
+    <File path="Source\Tools\Error.d" />
    </Folder>
    <File path="Source\winmain.d" />
   </Folder>

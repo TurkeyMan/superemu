@@ -13,8 +13,8 @@ Machine CreateSystem(const(RomInstance)* rom, RomDatabase db, const(char)[] syst
 {
 	if(systemID == null)
 	{
-		assert(rom.pSystem, "Unknown system for rom " ~ rom.path ~ "!");
-		systemID = rom.pSystem.id;
+		assert(rom.system != null, "Unknown system for rom " ~ rom.path ~ "!");
+		systemID = rom.system;
 	}
 
 	foreach(ref sys; sSystems)

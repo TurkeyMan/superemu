@@ -3,56 +3,45 @@ module demu.rommanager.romdatabase;
 import demu.rommanager.romscanner;
 import demu.rommanager.game;
 
-import etc.c.sqlite3;
+import demu.sqlitedb;
+import demu.error;
+
 import std.c.stdio;
-import std.string;
 import std.path;
-import std.traits;
 
 class RomDatabase
 {
-	enum ErrorCode
-	{
-		Success = 0,
-		Failed,
-	}
-
 	this()
 	{
-		int err = sqlite3_open("roms.db".ptr, &db);
-		if(err != SQLITE_OK)
+		db = new SQLiteDB("roms.db");
+
+		ErrorCode ec = db.Attach("registry.db", "registry");
+		assert(ec == ErrorCode.Success, db.GetErrorMessage());
+
+		systemDescTable = db.FetchTable!SystemDesc("registry", "systems");
+		// if this doesn't exist, we need to fetch it from the net...
+		if(!systemDescTable) // but for now we'll hard code it.
 		{
-			immutable(char)* pError = sqlite3_errmsg(db);
-			assert(pError[0..std.c.string.strlen(pError)]);
-			return;
+			systemDescTable = sSystems;
+			db.Insert(systemDescTable, "registry", "systems");
 		}
 
-		char* pErrorMessage;
-		err = sqlite3_exec(db, cast(char*)"ATTACH DATABASE 'registry.db' as registry".toStringz, null, cast(void*)this, &pErrorMessage);
-
-		systemDescTable = FetchTable!SystemDesc("registry", "systems");
-		// if this doesn't exist, we need to fetch it from the net...
-
-		roms = FetchTable!RomInstance(null, "roms");
+		// load roms and update system pointers
+		roms = db.FetchTable!RomInstance(null, "roms");
+		foreach(ref rom; roms)
+		{
+			if(rom.system)
+				rom.pSystem = FindSystem(rom.system);
+		}
 
 		// scan local roms... (we will want to defer this to a separate thread and update in the background)
 		RomInstance[] scanRoms = ScanRoms(this, roms);
-		if(roms)
-		{
-			UpdateLocalRoms(scanRoms);
-		}
-		else
-		{
-			roms = scanRoms;
-			Insert(roms, null, "roms");
-		}
-
-//		Insert(sSystems, "registry", "systems");
+		UpdateLocalRoms(scanRoms);
 	}
 
 	void Close()
 	{
-		sqlite3_close(db);
+		db.Close();
 		db = null;
 	}
 
@@ -84,136 +73,6 @@ class RomDatabase
 		return cast(ubyte[])std.file.read(rom.path);
 	}
 
-	ErrorCode CreateTable(RowStruct)(const(char)[] database = null, const(char)[] name = RowStruct.stringof)
-	{
-		string fields = TableDesc!RowStruct();
-		string query = format("CREATE TABLE %s (%s)", TableName!RowStruct(database, name), fields);
-
-		char* pErrorMessage;
-		int e = sqlite3_exec(db, cast(char*)query.toStringz, null, cast(void*)this, &pErrorMessage);
-
-		return e == SQLITE_OK ? ErrorCode.Success : ErrorCode.Failed;
-	}
-
-	ErrorCode Insert(RowStruct)(RowStruct[] items, const(char)[] database = null, const(char)[] table = RowStruct.stringof)
-	{
-		bool bCreated = false;
-
-		foreach(ref item; items)
-		{
-			string query = format("INSERT INTO %s (%s) VALUES (%s)", TableName!RowStruct(database, table), FieldList!(RowStruct, true)(), ValueList!(true)(item));
-
-		try_again:
-			char* pErrorMessage;
-			int e = sqlite3_exec(db, cast(char*)query.toStringz, null, cast(void*)this, &pErrorMessage);
-			if(e == SQLITE_ERROR)
-			{
-				if(!bCreated)
-				{
-					// create the table...
-					ErrorCode ec = CreateTable!RowStruct(database, table);
-					bCreated = true;
-
-					if(ec == ErrorCode.Success)
-						goto try_again;
-				}
-
-				return ErrorCode.Failed;
-			}
-		}
-
-		return ErrorCode.Success;
-	}
-
-	ErrorCode Update(RowStruct)(RowStruct items[], const(char)[] database = null, const(char)[] table = RowStruct.stringof)
-	{
-		foreach(ref item; items)
-		{
-			string query = format("UPDATE %s SET (%s) WHERE %s = '%s'", TableName!RowStruct(database, table), UpdateList!(true)(item), PrimaryKey!RowStruct, PrimaryKeyValue(item));
-
-			char* pErrorMessage;
-			int e = sqlite3_exec(db, cast(char*)query.toStringz, null, cast(void*)this, &pErrorMessage);
-			if(e == SQLITE_ERROR)
-				return ErrorCode.Failed;
-		}
-
-		return ErrorCode.Success;
-	}
-
-	ErrorCode Delete(RowStruct, K = PrimaryKeyType!RowStruct)(K items[], const(char)[] database = null, const(char)[] table = RowStruct.stringof)
-	{
-		foreach(ref item; items)
-		{
-			string query = format("DELETE FROM %s WHERE %s = '%s'", TableName!RowStruct(database, table), PrimaryKey!RowStruct, std.conv.to!string(item));
-
-			char* pErrorMessage;
-			int e = sqlite3_exec(db, cast(char*)query.toStringz, null, cast(void*)this, &pErrorMessage);
-			if(e == SQLITE_ERROR)
-				return ErrorCode.Failed;
-		}
-
-		return ErrorCode.Success;
-	}
-
-	RowStruct[] FetchTable(RowStruct)(const(char)[] database = null, const(char)[] table = RowStruct.stringof)
-	{
-		alias int delegate(const(char)*[] values, const(char)*[] columns) QueryResultsDelegate;
-
-		static extern(C) int QueryCallback(void* pUserData, int numColumns, char** ppValues, char** ppColumns)
-		{
-			return (*cast(QueryResultsDelegate*)pUserData)(ppValues[0..numColumns], ppColumns[0..numColumns]);
-		}
-
-		RowStruct[] results;
-
-		int QueryResults(RowStruct)(const(char)*[] values, const(char)*[] columns)
-		{
-			RowStruct row;
-			foreach(i, c; columns)
-			{
-				const(char)[] col = c[0..core.stdc.string.strlen(c)];
-
-				foreach(immutable string m; __traits(allMembers, RowStruct))
-				{
-					alias typeof(__traits(getMember, row, m)) Item;
-					static if(isPointer!Item)
-					{
-						// skip the pointers
-						continue;
-					}
-					else
-					{
-						if(std.algorithm.cmp(m, col) == 0)
-						{
-							const(char)* v = values[i];
-							const(char)[] val = v[0..core.stdc.string.strlen(v)];
-							static if(isSomeString!Item)
-								__traits(getMember, row, m) = val.idup;
-							else
-								__traits(getMember, row, m) = std.conv.parse!Item(val);
-							break;
-						}
-					}
-				}
-			}
-
-			results ~= row;
-			return 0;
-		}
-
-		QueryResultsDelegate r = &QueryResults!RowStruct;
-
-		string query = "SELECT * FROM " ~ TableName!RowStruct(database, table);
-
-		char* pErrorMessage;
-		int e = sqlite3_exec(db, query.toStringz, &QueryCallback, cast(void*)&r, &pErrorMessage);
-
-		if(e == SQLITE_ERROR)
-			return null;
-
-		return results;
-	}
-
 	const(SystemDesc)* FindSystem(string sysid)
 	{
 		foreach(ref sys; systemDescTable)
@@ -225,7 +84,7 @@ class RomDatabase
 	}
 
 private:
-	sqlite3* db;
+	SQLiteDB db;
 
 	RomInstance[] roms;
 	const(RomDesc)[] romDescTable;
@@ -240,7 +99,7 @@ private:
 		{
 			// just add them all!
 			roms = scan;
-			Insert(roms[], null, "roms");
+			db.Insert(roms[], null, "roms");
 			return;
 		}
 
@@ -278,7 +137,7 @@ private:
 			rom.key = k;
 
 			// update 'rom' to the database where key = 'k'
-			Update(rom[0..1], null, "roms");
+			db.Update(rom[0..1], null, "roms");
 		}
 
 		// remove any that were missing
@@ -301,7 +160,7 @@ private:
 			roms = updated;
 
 		// clear items from database WHERE key = 'removed[]'
-		Delete!RomInstance(removed, null, "roms");
+		db.Delete!RomInstance(removed, null, "roms");
 
 		// add the new ones to the end
 		if(added)
@@ -312,131 +171,12 @@ private:
 				roms ~= scan[i];
 
 			// insert new roms to database
-			Insert(roms[firstNew .. firstNew + added.length], null, "roms");
+			db.Insert(roms[firstNew .. firstNew + added.length], null, "roms");
 		}
 	}
 }
 
 private:
-
-template PrimaryKey(T)
-{
-	enum string PrimaryKey = __traits(allMembers, T)[0];
-}
-
-template PrimaryKeyType(T)
-{
-	alias typeof(__traits(getMember, T, __traits(allMembers, T)[0])) PrimaryKeyType;
-}
-
-string PrimaryKeyValue(T)(ref T row)
-{
-	return std.conv.to!string(__traits(getMember, row, PrimaryKey!T));
-}
-
-string TableName(T = void)(const(char)[] database = null, const(char)[] name = T.stringof)
-{
-	return format("%s%s", database ? format("%s.", database) : "", name);
-}
-
-string TableDesc(T, bool bDesc = false)()
-{
-	string fields;
-	foreach(i, m; __traits(allMembers, T))
-	{
-		alias typeof(__traits(getMember, T, m)) Item;
-		if(isPointer!Item)
-		{
-		   continue;
-		}
-		else
-		{
-			if(i > 0)
-				fields ~= ", ";
-
-			fields ~= "'" ~ m ~ "'";
-
-			if(__traits(isIntegral, Item))
-				fields ~= " INTEGER";
-			else if(__traits(isFloating, Item))
-				fields ~= " NUMERIC"; // " REAL"
-			else
-				fields ~= " TEXT";
-
-			if(m[] == PrimaryKey!T)
-				fields ~= " PRIMARY KEY" ~ (bDesc ? " DESC" : " ASC");
-		}
-	}
-
-	return fields;
-}
-
-string FieldList(T, bool SkipPK = false)()
-{
-	string fields;
-	foreach(i, m; __traits(allMembers, T))
-	{
-		alias typeof(__traits(getMember, T, m)) Item;
-		static if((SkipPK && m[] == PrimaryKey!T) || isPointer!Item)
-		{
-			continue;
-		}
-		else
-		{
-			if(fields != null)
-				fields ~= ", ";
-
-			fields ~= "'" ~ m ~ "'";
-		}
-	}
-	return fields;
-}
-
-string ValueList(bool SkipPK = false, T)(ref const(T) row)
-{
-	char[] fields;
-	foreach(i, immutable string m; __traits(allMembers, T))
-	{
-		alias typeof(__traits(getMember, T, m)) Item;
-		static if((SkipPK && m[] == PrimaryKey!T) || isPointer!Item)
-		{
-			continue;
-		}
-		else
-		{
-			if(fields != null)
-				fields ~= ", ";
-
-			string value = std.conv.to!string(__traits(getMember, row, m));
-			fields ~= "'" ~ value ~ "'";
-		}
-	}
-
-	return fields.idup;
-}
-
-string UpdateList(bool SkipPK = false, T)(ref const(T) row)
-{
-	char[] fields;
-	foreach(i, immutable string m; __traits(allMembers, T))
-	{
-		alias typeof(__traits(getMember, T, m)) Item;
-		static if((SkipPK && m[] == PrimaryKey!T) || isPointer!Item)
-		{
-			continue;
-		}
-		else
-		{
-			if(fields != null)
-				fields ~= ", ";
-
-			string value = std.conv.to!string(__traits(getMember, row, m));
-			fields ~= "'" ~ m ~ "' = '" ~ value ~ "'";
-		}
-	}
-
-	return fields.idup;
-}
 
 static immutable SystemDesc[] sSystems =
 [
