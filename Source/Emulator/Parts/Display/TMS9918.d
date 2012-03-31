@@ -23,10 +23,10 @@ class TMS9918 : Part
 		TMS9129,
 		SegaVDP,		// Sega Master System
 		YM7101,			// Sega Mega Drive
-		V9938,
+		V9938,			// Yamaha extended version
 		V9958,
-		V9990			// is this similar, or completely different?
-	};
+		V9990			// Yamaha successor (is this similar, or completely different?)
+	}
 
 	this(Machine machine, string name, Version tmsVersion, MemMap dmaMemMap = null, TMS9918 externalVDP = null)
 	{

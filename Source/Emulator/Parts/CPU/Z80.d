@@ -1779,7 +1779,7 @@ struct Registers
 					ushort BC2;
 					ushort DE2;
 					ushort HL2;
-				};
+				}
 
 				version(BigEndian)
 				{
@@ -1823,7 +1823,7 @@ struct Registers
 				ubyte Fz, Fs, Fv, Fh, Fc, Fn;
 			else
 				ubyte Fs, Fz, Fh, Fv, Fn, Fc;
-		};
+		}
 
 		// indexable 16 bit regs
 		ushort reg16[16];

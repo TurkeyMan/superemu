@@ -157,7 +157,7 @@ class Z80 : Processor
 				{
 					// log the instruction stream
 					if(bLogExecution)
-						bDisOpValid = !!DisassembleOp(registers.pc, &disOp);
+						bDisOpValid = !!DisassembleOpcode(registers.pc, &disOp);
 					pc = registers.pc;
 				}
 
@@ -722,7 +722,7 @@ class Z80 : Processor
 		}
 	}
 
-	int DisassembleOp(uint address, DisassembledOp* pOpcode)
+	int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
 	{
 		*pOpcode = DisassembledOp.init;
 		pOpcode.programOffset = address & procInfo.addressMask;
@@ -816,7 +816,7 @@ class Z80 : Processor
 				}
 			default:
 				break;
-		};
+		}
 
 		// some address modes have 2 args...
 		switch(addressMode)

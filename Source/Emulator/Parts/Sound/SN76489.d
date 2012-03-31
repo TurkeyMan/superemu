@@ -405,7 +405,7 @@ enum Channel
 	CH_1 = 0,
 	CH_2 = 1,
 	CH_3 = 2,
-};
+}
 
 enum Regs
 {
@@ -418,7 +418,7 @@ enum Regs
 	ATTENUATION_3,
 	NOISECONTROL,
 	NOISEATTENUATION,
-};
+}
 
 enum int SAMPLECLAMP = 32760;			// A whisker less than full deflection
 enum int SAMPLESCALE = 32760 / 3;		// Lets do each one as 1/3 volume, so the channels can add with reduced risk of clamping

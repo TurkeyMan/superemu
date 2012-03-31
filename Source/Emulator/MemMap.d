@@ -68,7 +68,7 @@ private final class MemoryRange
 	// auto-range support
 	ubyte romImage[];
 	bool bManaged;
-};
+}
 
 final class MemMap
 {
@@ -632,7 +632,7 @@ private:
 		ReadOnly = 0x4,      // memory is read only
 
 		CallbackIndex = 4,
-	};
+	}
 
 	struct Block
 	{
@@ -640,10 +640,10 @@ private:
 		{
 			uint flags;
 			ubyte* pPointer;
-		};
+		}
 		version(EnableMemTracking)
 			MemoryRange range;
-	};
+	}
 
 	// serviced reads via callbacks
 	ubyte ServicedRead8(uint address)
@@ -953,4 +953,4 @@ private:
 	// debug info
 	MemoryRange ranges[];
 	bool bTrapUndefinedAccess;
-};
+}

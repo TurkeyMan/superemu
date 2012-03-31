@@ -164,14 +164,14 @@ protected:
 		PortCallbacks,
 		VDPCallbacls,
 		Max68k
-	};
+	}
 
 	enum CallbackIDZ80
 	{
 		Registers = 0,
 		MC68k,
 		MaxZ80
-	};
+	}
 
 	// system components
 	MC68000 mc68k;

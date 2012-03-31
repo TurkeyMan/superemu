@@ -172,7 +172,7 @@ protected:
 	{
 		BankRegs = 0,
 		Count
-	};
+	}
 
 	Version revision;
 

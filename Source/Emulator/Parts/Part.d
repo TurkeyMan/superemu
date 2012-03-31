@@ -320,8 +320,8 @@ class Part
 			return sformat(buffer, "$%X", value);
 	}
 
-	/+virtual+/ uint GetRegisterValue(int reg) { return 0; };
-	/+virtual+/ void SetRegisterValue(int reg, uint value) {};
+	/+virtual+/ uint GetRegisterValue(int reg) { return 0; }
+	/+virtual+/ void SetRegisterValue(int reg, uint value) {}
 
 	// processor
 	/+virtual+/ @property const(ProcessorInfo)* ProcInfo() const nothrow { return null; }
@@ -524,7 +524,7 @@ protected:
 
 	static if(EnableDissassembly)
 	{
-		/+virtual+/ int DisassembleOpcode(uint address, DisassembledOp* pOpcode) { return false; };  
+		/+virtual+/ int DisassembleOpcode(uint address, DisassembledOp* pOpcode) { return false; }
 	}
 
 	// stack feature

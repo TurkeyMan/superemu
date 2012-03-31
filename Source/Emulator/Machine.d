@@ -7,6 +7,7 @@ import demu.display;
 import demu.executor;
 import demu.parts.part;
 import demu.parts.processor;
+import demu.debugger;
 
 import std.algorithm;
 import std.intrinsic;
@@ -191,6 +192,8 @@ class Machine
 	@property long SystemClock() const nothrow { return systemClock; }
 
 	// debug + logging
+	@property Debugger Dbg() nothrow { return debugger; }
+
 	int OpenLogFile()
 	{
 /*
@@ -245,6 +248,8 @@ protected:
 	uint minStep;
 
 	bool bYield;
+
+	Debugger debugger;
 
 	abstract void Update();
 

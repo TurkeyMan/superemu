@@ -3674,8 +3674,8 @@ struct Registers
 		uint l;
 		version(BigEndian)
 		{
-			struct { ushort paddw, w; };
-			struct { ubyte[3] paddb, b; };
+			struct { ushort paddw, w; }
+			struct { ubyte[3] paddb, b; }
 		}
 		else
 		{
@@ -3691,7 +3691,7 @@ struct Registers
 	uint msp;   // master stack pointer
 	uint pc;    // program counter
 	ushort sr;  // status register
-};
+}
 
 
 enum Instruction
@@ -4123,9 +4123,9 @@ struct EffectiveAddressTable
 		{
 			ubyte am;
 			ubyte r;
-		};
+		}
 		ushort d;
-	};
+	}
 }
 
 static immutable EffectiveAddressTable[64] g_ea =

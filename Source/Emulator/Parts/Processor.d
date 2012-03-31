@@ -56,7 +56,7 @@ class Processor : Part
 
 	// IRQ/signaling
 	void SignalIRQ(int irqLevel) nothrow { irqLineState = irqLevel; }
-	void TriggerNMI() nothrow { bNMIPending = true; };
+	void TriggerNMI() nothrow { bNMIPending = true; }
 
 	@property void IntAckCallback(EventDelegate callback) nothrow { intAckHandler = callback; }
 	@property EventDelegate IntAckCallback() const nothrow { return intAckHandler; }
