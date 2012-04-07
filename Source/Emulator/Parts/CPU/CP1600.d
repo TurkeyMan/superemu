@@ -1,9 +1,9 @@
-module demu.parts.cpu.cp1600;
+module demu.emulator.parts.cpu.cp1600;
 
-import demu.machine;
-import demu.memmap;
-import demu.parts.part;
-import demu.parts.processor;
+import demu.emulator.machine;
+import demu.emulator.memmap;
+import demu.emulator.parts.part;
+import demu.emulator.parts.processor;
 
 import std.string;
 

@@ -1,7 +1,7 @@
-module demu.parts.sound.sn76489;
+module demu.emulator.parts.sound.sn76489;
 
-import demu.machine;
-import demu.parts.soundpart;
+import demu.emulator.machine;
+import demu.emulator.parts.soundpart;
 
 import core.thread;
 
@@ -341,7 +341,7 @@ protected:
 			bit16 ^= bit16>>2;
 			bit16 ^= bit16>>1;
 			bit16 &= 0x1;
-			rnd = (bit16<<15)|((rnd>>1)&0x7fff);
+			rnd = (bit16 << 15) | ((rnd >> 1) & 0x7fff);
 			dest[i] = cast(ubyte)rnd & 0x1;
 		}
 		// And now init the Periodic noise buffer (basically 1 bit on in every 16)

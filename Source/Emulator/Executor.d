@@ -1,4 +1,4 @@
-module demu.executor;
+module demu.emulator.executor;
 
 class Executor
 {

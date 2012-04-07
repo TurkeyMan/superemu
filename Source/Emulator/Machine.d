@@ -1,24 +1,52 @@
-module demu.machine;
+module demu.emulator.machine;
 
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;
 
-import demu.display;
-import demu.executor;
-import demu.parts.part;
-import demu.parts.processor;
-import demu.debugger;
+import demu.emulator.display;
+import demu.emulator.executor;
+import demu.emulator.parts.part;
+import demu.emulator.parts.processor;
+import demu.emulator.debugger;
 
 import std.algorithm;
-import std.intrinsic;
 import std.stdio;
 import win32.windows: OutputDebugString;
+
+version(DigitalMars)
+	import std.intrinsic;
+else version(GNU)
+	import gcc.builtins;
+
+// define a pile of feature switches
+version(LittleEndian)
+{
+	enum Endian SystemEndian = Endian.Little;
+	enum bool LittleEndian = true;
+	enum bool BigEndian = false;
+}
+else
+{
+	enum Endian SystemEndian = Endian.Big;
+	enum bool LittleEndian = false;
+	enum bool BigEndian = true;
+}
 
 enum bool EnableDebugger = false;
 enum bool EnableExecutionLogging = true;
 enum bool EnableDissassembly = EnableDebugger || EnableExecutionLogging;
 enum bool EnableMemTracker = EnableDebugger || true;
 enum bool EnableSystemHalt = EnableDebugger;
+
+enum bool EnableMemTracking = true;
+
+// enums
+
+enum Endian
+{
+	Little,
+	Big
+}
 
 // handy stuff
 T alignTo(size_t A, T)(T v) pure nothrow
@@ -332,10 +360,12 @@ private:
 
 			// execute each processor that lands on this tick
 			uint i;
-//			while(BitScanReverse(mask, &i)) // bsr(0) intrinsic returns undefined value unlike the windows intrinsic
 			while(mask)
 			{
-				i = bsr(mask);
+				version(DigitalMars)
+					i = bsr(mask);
+				else version(GNU)
+					i = __builtin_clz(mask);
 
 				mask ^= 1 << i;
 

@@ -1,4 +1,4 @@
-module demu.error;
+module demu.tools.error;
 
 enum ErrorCode
 {

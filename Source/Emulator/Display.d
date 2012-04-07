@@ -1,6 +1,6 @@
-module demu.display;
+module demu.emulator.display;
 
-import demu.machine;
+import demu.emulator.machine;
 import std.math;
 
 enum LayerPresentMode

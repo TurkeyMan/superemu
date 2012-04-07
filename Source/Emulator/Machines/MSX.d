@@ -1,15 +1,15 @@
-module demu.systems.msx;
+module demu.emulator.systems.msx;
 
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;
 
-import demu.machine;
-import demu.memmap;
+import demu.emulator.machine;
+import demu.emulator.memmap;
 
-import demu.parts.part;
-import demu.parts.cpu.z80;
-import demu.parts.display.tms9918;
-import demu.parts.sound.sn76489;
+import demu.emulator.parts.part;
+import demu.emulator.parts.cpu.z80;
+import demu.emulator.parts.display.tms9918;
+import demu.emulator.parts.sound.sn76489;
 
 class MSX : Machine
 {

@@ -1,7 +1,7 @@
-module demu.debugger;
+module demu.emulator.debugger;
 
-import demu.machine;
-import demu.parts.processor;
+import demu.emulator.machine;
+import demu.emulator.parts.processor;
 
 enum BreakReason
 {

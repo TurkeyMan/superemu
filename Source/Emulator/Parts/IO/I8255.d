@@ -1,7 +1,7 @@
-module demu.parts.io.i8255;
+module demu.emulator.parts.io.i8255;
 
-import demu.machine;
-import demu.parts.part;
+import demu.emulator.machine;
+import demu.emulator.parts.part;
 
 /*** TODO: missing modes ***/
 

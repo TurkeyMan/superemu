@@ -1,8 +1,8 @@
-module demu.parts.io.mos6532;
+module demu.emulator.parts.io.mos6532;
 
-import demu.machine;
-import demu.parts.part;
-import demu.parts.processor;
+import demu.emulator.machine;
+import demu.emulator.parts.part;
+import demu.emulator.parts.processor;
 
 class MOS6532 : Part
 {

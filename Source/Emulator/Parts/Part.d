@@ -1,17 +1,11 @@
-module demu.parts.part;
+module demu.emulator.parts.part;
 
-import demu.machine;
-import demu.memmap;
-import demu.util;
+import demu.emulator.machine;
+import demu.emulator.memmap;
+import demu.tools.util;
 
 import std.string;
 import std.conv;
-
-enum Endian
-{
-	Little,
-	Big
-}
 
 enum LogTarget
 {
@@ -344,7 +338,7 @@ class Part
 				address &= procInfo.addressMask;
 
 				// check we haven't disassembled this code before...
-				/+
+/+
 				int i = address >> 5;
 				uint bit = 1 << (address&0x1F);
 
@@ -352,7 +346,7 @@ class Part
 					break;
 
 				codeDisassembled[i] |= bit;
-				+/
++/
 
 				DisassembledOp disasm = null;
 				int opBytes = DisassembleOpcode(address, &disasm);

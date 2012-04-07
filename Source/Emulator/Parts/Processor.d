@@ -1,10 +1,10 @@
-module demu.parts.processor;
+module demu.emulator.parts.processor;
 
-import demu.machine;
-import demu.parts.part;
+import demu.emulator.machine;
+import demu.emulator.parts.part;
 
 import std.string;
-import demu.util;
+import demu.tools.util;
 
 class Processor : Part
 {

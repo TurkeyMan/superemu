@@ -1,9 +1,9 @@
-module demu.parts.cpu.mos6502;
+module demu.emulator.parts.cpu.mos6502;
 
-import demu.machine;
-import demu.memmap;
-import demu.parts.part;
-import demu.parts.processor;
+import demu.emulator.machine;
+import demu.emulator.memmap;
+import demu.emulator.parts.part;
+import demu.emulator.parts.processor;
 
 import std.string;
 
@@ -12,8 +12,9 @@ class Z80 : Processor
 	enum Version
 	{
 		MOS6502,
-		MOS6507,
-		MOS6510,
+		MOS6507,	// 13 bit address bus
+		MOS6510,	// C64
+		RP2A03		// Ricoh 2A03 (NES); no BCD, some built-in memory mapped stuff
 	}
 
 	this(Machine machine, string name, MemMap memmap, Version processorRevision)

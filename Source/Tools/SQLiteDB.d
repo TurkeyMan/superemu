@@ -1,6 +1,6 @@
-module demu.sqlitedb;
+module demu.tools.sqlitedb;
 
-import demu.error;
+import demu.tools.error;
 
 import etc.c.sqlite3;
 

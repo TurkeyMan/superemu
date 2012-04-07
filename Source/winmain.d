@@ -6,10 +6,10 @@ import core.thread;
 import win32.windows;
 import win32.wingdi;
 
-import demu.systemregistry;
+import demu.emulator.systemregistry;
 
-import demu.machine;
-import demu.display;
+import demu.emulator.machine;
+import demu.emulator.display;
 
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;

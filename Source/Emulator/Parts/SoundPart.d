@@ -1,8 +1,8 @@
-module demu.parts.soundpart;
+module demu.emulator.parts.soundpart;
 
-import demu.machine;
-import demu.parts.part;
-import demu.parts.processor;
+import demu.emulator.machine;
+import demu.emulator.parts.part;
+import demu.emulator.parts.processor;
 
 import std.algorithm;
 import core.sync.mutex;

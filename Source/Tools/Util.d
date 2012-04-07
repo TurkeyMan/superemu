@@ -1,4 +1,4 @@
-module demu.util;
+module demu.tools.util;
 
 import std.string;
 import std.algorithm;

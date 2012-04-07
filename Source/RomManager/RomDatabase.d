@@ -3,8 +3,8 @@ module demu.rommanager.romdatabase;
 import demu.rommanager.romscanner;
 import demu.rommanager.game;
 
-import demu.sqlitedb;
-import demu.error;
+import demu.tools.sqlitedb;
+import demu.tools.error;
 
 import std.c.stdio;
 import std.path;

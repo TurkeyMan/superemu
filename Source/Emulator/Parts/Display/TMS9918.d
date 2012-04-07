@@ -1,9 +1,9 @@
-module demu.parts.display.tms9918;
+module demu.emulator.parts.display.tms9918;
 
-import demu.machine;
-import demu.display;
-import demu.memmap;
-import demu.parts.part;
+import demu.emulator.machine;
+import demu.emulator.display;
+import demu.emulator.memmap;
+import demu.emulator.parts.part;
 
 import std.algorithm;
 

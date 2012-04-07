@@ -1,9 +1,7 @@
-module demu.memmap;
+module demu.emulator.memmap;
 
 import core.stdc.stdio;
-import demu.machine;
-
-version = EnableMemTracking;
+import demu.emulator.machine;
 
 alias ubyte delegate(uint address)				Read8Handler;
 alias void delegate(uint address, ubyte value)	Write8Handler;
@@ -127,7 +125,7 @@ final class MemMap
 
 				memory[entry].pPointer = &pMemory[romOffset & addressMask] + flags;
 
-				version(EnableMemTracking)
+				static if(EnableMemTracking)
 					memory[entry].range = description;
 			}
 			romOffset += 0x100;
@@ -155,7 +153,7 @@ final class MemMap
 
 				memory[entry].flags = BlockFlags.Callback | (callbackID << BlockFlags.CallbackIndex) | flags;
 
-				version(EnableMemTracking)
+				static if(EnableMemTracking)
 					memory[entry].range = description;
 			}
 		}
@@ -312,52 +310,26 @@ final class MemMap
 	}
 
 	// these 16 bit accessors are faster for when we know the data we're loading is aligned
-	ushort Read16_LE_Aligned(uint address)
+	ushort Read16_Aligned(Endian endian)(uint address)
 	{
 		Block* block = &memory[address >> 8];
 		if(block.flags & BlockFlags.Callback)
 			return ServicedRead16_LE(address);
 		int offset = address & 0xFF;
 		ushort t = *cast(ushort*)((cast(size_t)block.pPointer & ~0xF) + offset);
-		version(BigEndian)
+		static if(endian != SystemEndian)
 			t = cast(ushort)((t >> 8) | (t << 8));
 		return t;
 	}
 
-	ushort Read16_BE_Aligned(uint address)
-	{
-		Block* block = &memory[address >> 8];
-		if(block.flags & BlockFlags.Callback)
-			return ServicedRead16_BE(address);
-		int offset = address & 0xFF;
-		ushort t = *cast(ushort*)((cast(size_t)block.pPointer & ~0xF) + offset);
-		version(LittleEndian)
-			t = cast(ushort)((t >> 8) | (t << 8));
-		return t;
-	}
-
-	void Write16_LE_Aligned(uint address, ushort value)
+	void Write16_Aligned(Endian endian)(uint address, ushort value)
 	{
 		Block* block = &memory[address >> 8];
 		if(block.flags & BlockFlags.FlagMask)
 			ServicedWrite16_LE(address, value);
 		else
 		{
-			version(BigEndian)
-				value = cast(ushort)((value >> 8) | (value << 8));
-			int offset = address & 0xFF;
-			*cast(ushort*)(block.pPointer + offset) = value;
-		}
-	}
-
-	void Write16_BE_Aligned(uint address, ushort value)
-	{
-		Block* block = &memory[address >> 8];
-		if(block.flags & BlockFlags.FlagMask)
-			ServicedWrite16_BE(address, value);
-		else
-		{
-			version(LittleEndian)
+			static if(endian != SystemEndian)
 				value = cast(ushort)((value >> 8) | (value << 8));
 			int offset = address & 0xFF;
 			*cast(ushort*)(block.pPointer + offset) = value;
@@ -416,52 +388,26 @@ final class MemMap
 	}
 
 	// 32bit aligned accessors
-	uint Read32_LE_Aligned(uint address)
+	uint Read32_Aligned(Endian endian)(uint address)
 	{
 		Block* block = &memory[address >> 8];
 		if(block.flags & BlockFlags.Callback)
 			return ServicedRead32_LE(address);
 		int offset = address & 0xFF;
 		uint t = *cast(uint*)((cast(size_t)block.pPointer & ~0xF) + offset);
-		version(BigEndian)
+		static if(endian != SystemEndian)
 			t = (t >> 24) | ((t >> 8) & 0xFF00) | ((t & 0xFF00) << 8) | (t << 24);
 		return t;
 	}
 
-	uint Read32_BE_Aligned(uint address)
-	{
-		Block* block = &memory[address >> 8];
-		if(block.flags & BlockFlags.Callback)
-			return ServicedRead32_BE(address);
-		int offset = address & 0xFF;
-		uint t = *cast(uint*)((cast(size_t)block.pPointer & ~0xF) + offset);
-		version(LittleEndian)
-			t = (t >> 24) | ((t >> 8) & 0xFF00) | ((t & 0xFF00) << 8) | (t << 24);
-		return t;
-	}
-
-	void Write32_LE_Aligned(uint address, uint value)
+	void Write32_Aligned(Endian endian)(uint address, uint value)
 	{
 		Block* block = &memory[address >> 8];
 		if(block.flags & BlockFlags.FlagMask)
 			ServicedWrite32_LE(address, value);
 		else
 		{
-			version(BigEndian)
-				value = (value >> 24) | ((value >> 8) & 0xFF00) | ((value & 0xFF00) << 8) | (value << 24);
-			int offset = address & 0xFF;
-			*cast(uint*)(block.pPointer + offset) = value;
-		}
-	}
-
-	void Write32_BE_Aligned(uint address, uint value)
-	{
-		Block* block = &memory[address >> 8];
-		if(block.flags & BlockFlags.FlagMask)
-			ServicedWrite32_BE(address, value);
-		else
-		{
-			version(LittleEndian)
+			static if(endian != SystemEndian)
 				value = (value >> 24) | ((value >> 8) & 0xFF00) | ((value & 0xFF00) << 8) | (value << 24);
 			int offset = address & 0xFF;
 			*cast(uint*)(block.pPointer + offset) = value;
@@ -554,7 +500,7 @@ final class MemMap
 		{
 			char buff[64];
 
-			version(EnableMemTracking)
+			static if(EnableMemTracking)
 			{
 				Block* block = &memory[address >> 8];
 				printf("Illegal Read from 0x%08X in block '%s'!", address, block.range ? block.range.name : "");
@@ -595,7 +541,7 @@ final class MemMap
 		// opportunity to trap invalid writes here
 		if(bTrapUndefinedAccess)
 		{
-			version(EnableMemTracking)
+			static if(EnableMemTracking)
 			{
 				Block* block = &memory[address >> 8];
 				printf("Illegal Write to 0x%08X in block '%s'!", address, block.range ? block.range.name : "");
@@ -622,6 +568,17 @@ final class MemMap
 		}
 	}
 
+	// alias the memory functions
+	alias Read16_Aligned!(Endian.Little) Read16_LE_Aligned;
+	alias Read16_Aligned!(Endian.Big) Read16_BE_Aligned;
+	alias Write16_Aligned!(Endian.Little) Write16_LE_Aligned;
+	alias Write16_Aligned!(Endian.Big) Write16_BE_Aligned;
+
+	alias Read32_Aligned!(Endian.Little) Read32_LE_Aligned;
+	alias Read32_Aligned!(Endian.Big) Read32_BE_Aligned;
+	alias Write32_Aligned!(Endian.Little) Write32_LE_Aligned;
+	alias Write32_Aligned!(Endian.Big) Write32_BE_Aligned;
+
 private:
 	enum BlockFlags
 	{
@@ -641,7 +598,7 @@ private:
 			uint flags;
 			ubyte* pPointer;
 		}
-		version(EnableMemTracking)
+		static if(EnableMemTracking)
 			MemoryRange range;
 	}
 

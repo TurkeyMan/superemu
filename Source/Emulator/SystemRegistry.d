@@ -1,13 +1,13 @@
-module demu.systemregistry;
+module demu.emulator.systemregistry;
 
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;
 
-import demu.machine;
-import demu.systems.segamastersystem;
-import demu.systems.segagenesis;
-import demu.systems.colecovision;
-import demu.systems.msx;
+import demu.emulator.machine;
+import demu.emulator.systems.segamastersystem;
+import demu.emulator.systems.segagenesis;
+import demu.emulator.systems.colecovision;
+import demu.emulator.systems.msx;
 
 Machine CreateSystem(const(RomInstance)* rom, RomDatabase db, const(char)[] systemID = null)
 {
