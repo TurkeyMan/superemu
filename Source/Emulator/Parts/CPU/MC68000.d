@@ -483,7 +483,6 @@ class MC68000 : Processor
 				switch(op.op)
 				{
 					case Instruction.MC68000_ABCD:
-					{
 						ushort x = ((regs.sr >> 4) & 1);
 
 						ushort lowNybble = cast(ubyte)((operand0 & 0xF) + (operand1 & 0xF) + x);
@@ -501,11 +500,9 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVC(result, operand0, operand1, 8);
 						break;
-					}
 					case Instruction.MC68000_ADDXB:
 					case Instruction.MC68000_ADDB:
 					case Instruction.MC68000_ADDIB:
-					{
 						int x = (op.op == Instruction.MC68000_ADDXB && (regs.sr & SF_Extend) ? 1 : 0);
 
 						uint result = cast(ubyte)operand0 + cast(ubyte)operand1 + x;
@@ -517,11 +514,9 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVC(result, operand0, operand1, 8);
 						break;
-					}
 					case Instruction.MC68000_ADDXW:
 					case Instruction.MC68000_ADDW:
 					case Instruction.MC68000_ADDIW:
-					{
 						int x = (op.op == Instruction.MC68000_ADDXW && (regs.sr & SF_Extend) ? 1 : 0);
 
 						uint result = cast(ushort)operand0 + cast(ushort)operand1 + x;
@@ -533,11 +528,9 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVC(result, operand0, operand1, 16);
 						break;
-					}
 					case Instruction.MC68000_ADDXL:
 					case Instruction.MC68000_ADDL:
 					case Instruction.MC68000_ADDIL:
-					{
 						int x = (op.op == Instruction.MC68000_ADDXL && (regs.sr & SF_Extend) ? 1 : 0);
 
 						ulong result = cast(ulong)operand0 + cast(ulong)operand1 + x;
@@ -549,7 +542,6 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVC(result, operand0, operand1, 32);
 						break;
-					}
 					case Instruction.MC68000_ADDAW:
 						regs.a[op.d1].l += cast(short)cast(ushort)operand0;
 						break;
@@ -557,7 +549,6 @@ class MC68000 : Processor
 						regs.a[op.d1].l += cast(int)operand0;
 						break;
 					case Instruction.MC68000_ANDB:
-					{
 						uint result = operand0 & operand1;
 
 						switch(op.am1)
@@ -576,9 +567,7 @@ class MC68000 : Processor
 								break;
 						}
 						break;
-					}
 					case Instruction.MC68000_ANDW:
-					{
 						uint result = operand0 & operand1;
 
 						switch(op.am1)
@@ -601,9 +590,7 @@ class MC68000 : Processor
 								break;
 						}
 						break;
-					}
 					case Instruction.MC68000_ANDL:
-					{
 						uint result = operand0 & operand1;
 
 						if(op.am1 > AddressingMode.AReg)
@@ -613,9 +600,7 @@ class MC68000 : Processor
 
 						regs.sr = (regs.sr & 0xFFF0) | FLAG_NZ(result, 32);
 						break;
-					}
 					case Instruction.MC68000_ASLB:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -629,9 +614,7 @@ class MC68000 : Processor
 						regs.sr |= FLAG_XNZC(result, 8);
 						// TODO: WE NEED TO SET THE V BIT TO TEST FOR OVERFLOW!!
 						break;
-					}
 					case Instruction.MC68000_ASLW:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -645,9 +628,7 @@ class MC68000 : Processor
 						regs.sr |= FLAG_XNZC(result, 16);
 						// TODO: WE NEED TO SET THE V BIT TO TEST FOR OVERFLOW!!
 						break;
-					}
 					case Instruction.MC68000_ASLL:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -661,9 +642,7 @@ class MC68000 : Processor
 						regs.sr |= FLAG_XNZC(result, 32);
 						// TODO: WE NEED TO SET THE V BIT TO TEST FOR OVERFLOW!!
 						break;
-					}
 					case Instruction.MC68000_ASRB:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -676,9 +655,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 8);
 						break;
-					}
 					case Instruction.MC68000_ASRW:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -691,9 +668,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 16);
 						break;
-					}
 					case Instruction.MC68000_ASRL:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -706,7 +681,6 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 32);
 						break;
-					}
 					case Instruction.MC68000_BCHG:
 						regs.sr |= SF_Zero;
 						if(op.am1 >= AddressingMode.Ind)
@@ -799,7 +773,6 @@ class MC68000 : Processor
 							goto __BccTrue;
 						goto __BccFalse;
 					case Instruction.MC68000_BGE: //CND_GreaterOrEqual
-					{
 						// Added by Stu. N & V | /N & /V needs optimizing
 						ubyte n, v;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -807,9 +780,7 @@ class MC68000 : Processor
 						if (((n & v) | ((n^1) & (v^1))) != 0)
 							goto __BccTrue;
 						goto __BccFalse;
-					}
 					case Instruction.MC68000_BLT: //CND_LessThan
-					{
 						// Added by Stu. N & /V | /N & V needs optimizing
 						ubyte n, v;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -817,9 +788,7 @@ class MC68000 : Processor
 						if (((n && !v) || (!n && v)) != 0)
 							goto __BccTrue;
 						goto __BccFalse;
-					}
 					case Instruction.MC68000_BGT: //CND_GreaterThan
-					{
 						// Added by Stu. (N&V&/Z) + (/N&/V&/Z) needs optimizing
 						ubyte n, v, z;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -828,9 +797,7 @@ class MC68000 : Processor
 						if (((n & v & (z^1)) | ((n^1) & (v^1) & (z^1))) != 0)
 							goto __BccTrue;
 						goto __BccFalse;
-					}
 					case Instruction.MC68000_BLE: //CND_LessOrEqual
-					{
 						// Added by Stu. Z + (N&/V) + (/N&V) needs optimizing
 						ubyte n, v, z;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -839,7 +806,6 @@ class MC68000 : Processor
 						if (((z | (n & (v^1)) | ((n^1) & v))) != 0)
 							goto __BccTrue;
 						goto __BccFalse;
-					}
 					case Instruction.MC68000_BSR:
 						// BSR ** Note: Bcc uses the 'false' condition here
 						// allow the debugger to track the callstack
@@ -885,64 +851,51 @@ class MC68000 : Processor
 						assert(false, "WRITE ME!");
 						break;
 					case Instruction.MC68000_CLRB:
-					{
 						regs.sr = (regs.sr & 0xFFF0) | SF_Zero;
 						if(op.am0 >= AddressingMode.Ind)
 							Write8(address0, 0);
 						else
 							regs.d[op.d0].b = 0;
 						break;
-					}
 					case Instruction.MC68000_CLRW:
-					{
 						regs.sr = (regs.sr & 0xFFF0) | SF_Zero;
 						if(op.am0 >= AddressingMode.Ind)
 							Write16(address0, 0);
 						else
 							regs.d[op.d0].w = 0;
 						break;
-					}
-				case Instruction.MC68000_CLRL:
-					{
+					case Instruction.MC68000_CLRL:
 						regs.sr = (regs.sr & 0xFFF0) | SF_Zero;
 						if(op.am0 >= AddressingMode.Ind)
 							Write32(address0, 0);
 						else
 							regs.d[op.d0].l = 0;
 						break;
-					}
 					case Instruction.MC68000_CMPB:
-					{
 						int result = cast(ubyte)operand1 - cast(ubyte)operand0;
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZVnC(result, operand1, operand0, 8);
 						break;
-					}
 					case Instruction.MC68000_CMPW:
-					{
 						int result = cast(ushort)operand1 - cast(ushort)operand0;
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZVnC(result, operand1, operand0, 16);
 						break;
-					}
 					case Instruction.MC68000_CMPL:
-					{
 						long result = cast(ulong)operand1 - cast(ulong)operand0;
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZVnC(result, operand1, operand0, 32);
 						break;
-					}
 					case Instruction.MC68000_CMPA:
-					if(op.ds == DataSize.Word)
-					{
-						// the hardware sign extends the operands for the comparison, but is it actually necessary???
-						// i think a 16 bit comparison in this case would be identical? this is probably redundant work...
-						op.ds = DataSize.Long;
-						operand0 = cast(uint)cast(int)cast(short)cast(ushort)operand0;
-						operand1 = cast(uint)cast(int)cast(short)cast(ushort)operand1;
-					}
+						if(op.ds == DataSize.Word)
+						{
+							// the hardware sign extends the operands for the comparison, but is it actually necessary???
+							// i think a 16 bit comparison in this case would be identical? this is probably redundant work...
+							op.ds = DataSize.Long;
+							operand0 = cast(uint)cast(int)cast(short)cast(ushort)operand0;
+							operand1 = cast(uint)cast(int)cast(short)cast(ushort)operand1;
+						}
 					case Instruction.MC68000_CMPM:
-					{
 						regs.sr &= 0xFFF0;
 
 						switch(op.ds)
@@ -969,7 +922,6 @@ class MC68000 : Processor
 								break;
 						}
 						break;
-					}
 					case Instruction.MC68000_DBHI: //CND_High
 						if ((regs.sr & (SF_Carry | SF_Zero)) == 0)
 							goto __DBccTrue;
@@ -1011,7 +963,6 @@ class MC68000 : Processor
 							goto __DBccTrue;
 						goto __DBccFalse;
 					case Instruction.MC68000_DBGE: //CND_GreaterOrEqual
-					{
 						// Added by Stu. N & V | /N & /V needs optimizing
 						ubyte n, v;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -1019,9 +970,7 @@ class MC68000 : Processor
 						if (((n & v) | ((n^1) & (v^1))) != 0)
 							goto __DBccTrue;
 						goto __DBccFalse;
-					}
 					case Instruction.MC68000_DBLT: //CND_LessThan
-					{
 						// Added by Stu. N & /V | /N & V needs optimizing
 						ubyte n, v;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -1029,9 +978,7 @@ class MC68000 : Processor
 						if (((n && !v) || (!n && v)) != 0)
 							goto __DBccTrue;
 						goto __DBccFalse;
-					}
 					case Instruction.MC68000_DBGT: //CND_GreaterThan
-					{
 						// Added by Stu. (N&V&/Z) + (/N&/V&/Z) needs optimizing
 						ubyte n, v, z;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -1040,9 +987,7 @@ class MC68000 : Processor
 						if (((n & v & (z^1)) | ((n^1) & (v^1) & (z^1))) != 0)
 							goto __DBccTrue;
 						goto __DBccFalse;
-					}
 					case Instruction.MC68000_DBLE: //CND_LessOrEqual
-					{
 						// Added by Stu. Z + (N&/V) + (/N&V) needs optimizing
 						ubyte n, v, z;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -1051,7 +996,6 @@ class MC68000 : Processor
 						if (((z | (n & (v^1)) | ((n^1) & v))) != 0)
 							goto __DBccTrue;
 						goto __DBccFalse;
-					}
 					case Instruction.MC68000_DBT:
 					__DBccTrue:
 						cycleCount += pSpecialInstructionTimings[SpecialInstructionTimings.DBcc_ccTrue];
@@ -1069,7 +1013,6 @@ class MC68000 : Processor
 						--regs.d[op.d0].w;
 						break;
 					case Instruction.MC68000_DIVS:
-					{
 						if(operand0 == 0)
 						{
 							// divide by zero exception
@@ -1091,7 +1034,6 @@ class MC68000 : Processor
 							regs.sr |= FLAG_NZ(result, 16);
 						}
 						break;
-					}
 					case Instruction.MC68000_DIVU:
 						if(operand0 == 0)
 						{
@@ -1114,7 +1056,6 @@ class MC68000 : Processor
 						}
 						break;
 					case Instruction.MC68000_EORB:
-					{
 						uint result = operand0 ^ operand1;
 						switch(op.am1)
 						{
@@ -1132,9 +1073,7 @@ class MC68000 : Processor
 								break;
 						}
 						break;
-					}
 					case Instruction.MC68000_EORW:
-					{
 						uint result = operand0 ^ operand1;
 						switch(op.am1)
 						{
@@ -1156,9 +1095,7 @@ class MC68000 : Processor
 								break;
 						}
 						break;
-					}
 					case Instruction.MC68000_EORL:
-					{
 						uint result = operand0 ^ operand1;
 						if(op.am1 > AddressingMode.AReg)
 							Write32(address1, result);
@@ -1166,7 +1103,6 @@ class MC68000 : Processor
 							regs.d[op.d1].l = result;
 						regs.sr = (regs.sr & 0xFFF0) | FLAG_NZ(result, 32);
 						break;
-					}
 					case Instruction.MC68000_EXG:
 						regs.d[op.d0].l = operand1;
 						regs.d[op.d1].l = operand0;
@@ -1207,7 +1143,6 @@ class MC68000 : Processor
 						regs.a[7].l += cast(short)operand1;
 						break;
 					case Instruction.MC68000_LSLB:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1220,9 +1155,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 8);
 						break;
-					}
 					case Instruction.MC68000_LSLW:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1235,9 +1168,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 16);
 						break;
-					}
 					case Instruction.MC68000_LSLL:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1250,9 +1181,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 32);
 						break;
-					}
 					case Instruction.MC68000_LSRB:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1266,9 +1195,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 8);
 						break;
-					}
 					case Instruction.MC68000_LSRW:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1282,9 +1209,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 16);
 						break;
-					}
 					case Instruction.MC68000_LSRL:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1298,7 +1223,6 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 32);
 						break;
-					}
 					case Instruction.MC68000_MOVEAW:
 						regs.a[op.d1].l = cast(uint)cast(int)cast(short)operand0;
 						break;
@@ -1327,7 +1251,6 @@ class MC68000 : Processor
 						regs.sr = FLAG_NZ(operand0, 32) | (regs.sr & 0xFFF0);
 						break;
 					case Instruction.MC68000_MOVEM:
-					{
 						Registers.Register* pRegs = regs.d.ptr;
 
 						int oldAddress = address1;
@@ -1442,7 +1365,6 @@ class MC68000 : Processor
 								regs.a[op.d1&7].l = address1;
 						}
 						break;
-					}
 					case Instruction.MC68000_MOVEP:
 						if(opcode & 0x80)
 						{
@@ -1551,7 +1473,6 @@ class MC68000 : Processor
 						regs.sr |= FLAG_NZ(regs.d[op.d1].l, 32);
 						break;
 					case Instruction.MC68000_NBCD:
-					{
 						ushort x = ((regs.sr >> 4) & 1);
 
 						ushort result = cast(ushort)(0 - cast(ubyte)operand0 - x);
@@ -1573,10 +1494,8 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, 0u, operand0, 8);
 						break;
-					}
 					case Instruction.MC68000_NEGB:
 					case Instruction.MC68000_NEGXB:
-					{
 						long result = 0 - operand0 - (op.op == Instruction.MC68000_NEGXB && ((regs.sr >> 4) & 1));
 
 						if(op.am0 >= AddressingMode.Ind)
@@ -1587,10 +1506,8 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, 0u, operand0, 8);
 						break;
-					}
 					case Instruction.MC68000_NEGW:
 					case Instruction.MC68000_NEGXW:
-					{
 						long result = 0 - operand0 - (op.op == Instruction.MC68000_NEGXW && ((regs.sr >> 4) & 1));
 
 						if(op.am0 >= AddressingMode.Ind)
@@ -1601,10 +1518,8 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, 0u, operand0, 16);
 						break;
-					}
 					case Instruction.MC68000_NEGL:
 					case Instruction.MC68000_NEGXL:
-					{
 						long result = 0 - operand0 - (op.op == Instruction.MC68000_NEGXL && ((regs.sr >> 4) & 1));
 
 						if(op.am0 >= AddressingMode.Ind)
@@ -1615,12 +1530,10 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, 0u, operand0, 32);
 						break;
-					}
 					case Instruction.MC68000_NOP:
 						// do nothing...
 						break;
 					case Instruction.MC68000_NOTB:
-					{
 						uint result = ~operand0;
 
 						if(op.am0 >= AddressingMode.Ind)
@@ -1631,9 +1544,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZ(result, 8);
 						break;
-					}
 					case Instruction.MC68000_NOTW:
-					{
 						uint result = ~operand0;
 
 						if(op.am0 >= AddressingMode.Ind)
@@ -1644,9 +1555,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZ(result, 16);
 						break;
-					}
 					case Instruction.MC68000_NOTL:
-					{
 						uint result = ~operand0;
 
 						if(op.am0 >= AddressingMode.Ind)
@@ -1657,9 +1566,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZ(result, 32);
 						break;
-					}
 					case Instruction.MC68000_ORB:
-					{
 						uint result = operand0 | operand1;
 
 						switch(op.am1)
@@ -1678,9 +1585,7 @@ class MC68000 : Processor
 								break;
 						}
 						break;
-					}
 					case Instruction.MC68000_ORW:
-					{
 						uint result = operand0 | operand1;
 
 						switch(op.am1)
@@ -1699,9 +1604,7 @@ class MC68000 : Processor
 								break;
 						}
 						break;
-					}
 					case Instruction.MC68000_ORL:
-					{
 						uint result = operand0 | operand1;
 
 						if(op.am1 > AddressingMode.AReg)
@@ -1711,7 +1614,6 @@ class MC68000 : Processor
 
 						regs.sr = (regs.sr & 0xFFF0) | FLAG_NZ(result, 32);
 						break;
-					}
 					case Instruction.MC68000_PEA:
 						Push32(address0);
 						break;
@@ -1728,7 +1630,6 @@ class MC68000 : Processor
 							resetHandler(this);
 						break;
 					case Instruction.MC68000_ROLB:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1742,9 +1643,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;  // clear flags
 						regs.sr |= FLAG_NZ(result, 8) | (result & SF_Carry);
 						break;
-					}
 					case Instruction.MC68000_ROLW:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1758,9 +1657,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;  // clear flags
 						regs.sr |= FLAG_NZ(result, 16) | (result & SF_Carry);
 						break;
-					}
 					case Instruction.MC68000_ROLL:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1773,9 +1670,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;  // clear flags
 						regs.sr |= FLAG_NZ(result, 32) | (result & SF_Carry);
 						break;
-					}
 					case Instruction.MC68000_RORB:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1789,9 +1684,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;  // clear flags
 						regs.sr |= FLAG_NZ(result, 8) | ((result >> 7) & SF_Carry);
 						break;
-					}
 					case Instruction.MC68000_RORW:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1805,9 +1698,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;  // clear flags
 						regs.sr |= FLAG_NZ(result, 16) | ((result >> 7) & SF_Carry);
 						break;
-					}
 					case Instruction.MC68000_RORL:
-					{
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
 
@@ -1820,9 +1711,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFF0;  // clear flags
 						regs.sr |= FLAG_NZ(result, 32) | ((result >> 7) & SF_Carry);
 						break;
-					}
 					case Instruction.MC68000_ROXLB:
-					{
 						uint x = (regs.sr & SF_Extend) >> 4;
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
@@ -1837,9 +1726,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 8);
 						break;
-					}
 					case Instruction.MC68000_ROXLW:
-					{
 						uint x = (regs.sr & SF_Extend) >> 4;
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
@@ -1854,9 +1741,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 16);
 						break;
-					}
 					case Instruction.MC68000_ROXLL:
-					{
 						uint x = (regs.sr & SF_Extend) >> 4;
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
@@ -1870,9 +1755,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 32);
 						break;
-					}
 					case Instruction.MC68000_ROXRB:
-					{
 						uint x = (regs.sr & SF_Extend) >> 4;
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
@@ -1887,9 +1770,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 8);
 						break;
-					}
 					case Instruction.MC68000_ROXRW:
-					{
 						uint x = (regs.sr & SF_Extend) >> 4;
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
@@ -1904,9 +1785,7 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 16);
 						break;
-					}
 					case Instruction.MC68000_ROXRL:
-					{
 						uint x = (regs.sr & SF_Extend) >> 4;
 						operand0 &= 0x3F;   // shift/rotate is modulo 64
 						cycleCount += operand0*2;
@@ -1920,7 +1799,6 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;  // clear flags
 						regs.sr |= FLAG_XNZC(result, 32);
 						break;
-					}
 					case Instruction.MC68000_RTE:
 						if(!(regs.sr & SF_Supervisor))
 						{
@@ -1962,7 +1840,6 @@ class MC68000 : Processor
 //						DebugReturnFromSub(regs.pc);
 						break;
 					case Instruction.MC68000_SBCD:
-					{
 						ushort x = ((regs.sr >> 4) & 1);
 						ushort result = cast(ushort)(cast(ubyte)operand1 - cast(ubyte)operand0 - x);
 
@@ -1983,7 +1860,6 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, operand1, operand0, 8);
 						break;
-					}
 					case Instruction.MC68000_SHI: //CND_High
 						if ((regs.sr & (SF_Carry | SF_Zero)) == 0)
 							goto __SccTrue;
@@ -2025,7 +1901,6 @@ class MC68000 : Processor
 							goto __SccTrue;
 						goto __SccFalse;
 					case Instruction.MC68000_SGE: //CND_GreaterOrEqual
-					{
 						// Added by Stu. N & V | /N & /V needs optimizing
 						ubyte n, v;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -2033,9 +1908,7 @@ class MC68000 : Processor
 						if (((n & v) | ((n^1) & (v^1))) != 0)
 							goto __SccTrue;
 						goto __SccFalse;
-					}
 					case Instruction.MC68000_SLT: //CND_LessThan
-					{
 						// Added by Stu. N & /V | /N & V needs optimizing
 						ubyte n, v;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -2043,9 +1916,7 @@ class MC68000 : Processor
 						if (((n && !v) || (!n && v)) != 0)
 							goto __SccTrue;
 						goto __SccFalse;
-					}
 					case Instruction.MC68000_SGT: //CND_GreaterThan
-					{
 						// Added by Stu. (N&V&/Z) + (/N&/V&/Z) needs optimizing
 						ubyte n, v, z;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -2054,9 +1925,7 @@ class MC68000 : Processor
 						if (((n & v & (z^1)) | ((n^1) & (v^1) & (z^1))) != 0)
 							goto __SccTrue;
 						goto __SccFalse;
-					}
 					case Instruction.MC68000_SLE: //CND_LessOrEqual
-					{
 						// Added by Stu. Z + (N&/V) + (/N&V) needs optimizing
 						ubyte n, v, z;
 						n = (regs.sr & SF_Negative) >> 3;
@@ -2065,7 +1934,6 @@ class MC68000 : Processor
 						if (((z | (n & (v^1)) | ((n^1) & v))) != 0)
 							goto __SccTrue;
 						goto __SccFalse;
-					}
 					case Instruction.MC68000_ST:
 					__SccTrue:
 						if(op.am1 >= AddressingMode.Ind)
@@ -2116,7 +1984,6 @@ class MC68000 : Processor
 					case Instruction.MC68000_SUBXB:
 					case Instruction.MC68000_SUBB:
 					case Instruction.MC68000_SUBIB:
-					{
 						int x = (op.op == Instruction.MC68000_SUBXB && (regs.sr & SF_Extend) ? 1 : 0);
 
 						int result = cast(ubyte)operand1 - cast(ubyte)operand0 - x;
@@ -2128,11 +1995,9 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, operand1, operand0, 8);
 						break;
-					}
 					case Instruction.MC68000_SUBXW:
 					case Instruction.MC68000_SUBW:
 					case Instruction.MC68000_SUBIW:
-					{
 						int x = (op.op == Instruction.MC68000_SUBXW && (regs.sr & SF_Extend) ? 1 : 0);
 
 						int result = cast(ushort)operand1 - cast(ushort)operand0 - x;
@@ -2144,11 +2009,9 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, operand1, operand0, 16);
 						break;
-					}
 					case Instruction.MC68000_SUBXL:
 					case Instruction.MC68000_SUBL:
 					case Instruction.MC68000_SUBIL:
-					{
 						int x = (op.op == Instruction.MC68000_SUBXL && (regs.sr & SF_Extend) ? 1 : 0);
 
 						long result = cast(ulong)operand1 - cast(ulong)operand0 - x;
@@ -2160,7 +2023,6 @@ class MC68000 : Processor
 						regs.sr &= 0xFFE0;
 						regs.sr |= FLAG_XNZVnC(result, operand1, operand0, 32);
 						break;
-					}
 					case Instruction.MC68000_SUBAW:
 						regs.a[op.d1].l -= cast(short)cast(ushort)operand0;
 						break;
@@ -2190,23 +2052,17 @@ class MC68000 : Processor
 						}
 						break;
 					case Instruction.MC68000_TSTB:
-					{
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZ(operand0, 8);
 						break;
-					}
 					case Instruction.MC68000_TSTW:
-					{
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZ(operand0, 16);
 						break;
-					}
 					case Instruction.MC68000_TSTL:
-					{
 						regs.sr &= 0xFFF0;
 						regs.sr |= FLAG_NZ(operand0, 32);
 						break;
-					}
 					case Instruction.MC68000_UNLK:
 						regs.a[7].l = regs.a[op.d0].l;
 						regs.a[op.d0].l = Pop32();
@@ -2400,7 +2256,6 @@ class MC68000 : Processor
 			case Instruction.MC68000_BLT:
 			case Instruction.MC68000_BGT:
 			case Instruction.MC68000_BLE:
-			{
 				switch(op.op)
 				{
 					case Instruction.MC68000_BRA:
@@ -2436,7 +2291,6 @@ class MC68000 : Processor
 
 				arg.arg.format("$%0*X", procInfo.addressWidth >> 2, arg.value);
 				break;
-			}
 			case Instruction.MC68000_DBT:
 			case Instruction.MC68000_DBF:
 			case Instruction.MC68000_DBHI:
@@ -2453,7 +2307,6 @@ class MC68000 : Processor
 			case Instruction.MC68000_DBLT:
 			case Instruction.MC68000_DBGT:
 			case Instruction.MC68000_DBLE:
-			{
 				pOpcode.flags |= DisassembledOp.Flags.Branch;
 
 				pOpcode.lineTemplate = "%s %s, %s";
@@ -2476,9 +2329,7 @@ class MC68000 : Processor
 				arg.value = address + cast(short)cast(ushort)arg.value;
 				arg.arg.format("$%0*X", procInfo.addressWidth >> 2, arg.value);
 				break;
-			}
 			case Instruction.MC68000_MOVEM:
-			{
 				// MOVEM is very unconventional...
 				// Decode() will naturally produce the syntax: MOVEM #$REGS, <ea>
 				// we need to produce the "REGS D0-3A1-2" string from the immediate and swap the args for loads
@@ -2549,11 +2400,9 @@ class MC68000 : Processor
 				if(lastReg)
 					pArg.arg.formatAppend("-%d", lastReg & 7);
 				break;
-			}
 			case Instruction.MC68000_UNLK:
 				op.d0 += 8;
 			case Instruction.MC68000_SWAP:
-			{
 				pOpcode.lineTemplate ~= " %s";
 
 				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
@@ -2561,16 +2410,13 @@ class MC68000 : Processor
 				arg.arg = regInfo[op.d0].name;
 				arg.value = op.d0;
 				break;
-			}
 			case Instruction.MC68000_TRAP:
-			{
 				pOpcode.lineTemplate ~= " %s";
 				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
 				arg.type = DisassembledOp.Arg.Type.Constant;
 				arg.value = op.d0;
 				arg.arg.format("#%d", op.d0);
 				break;
-			}
 			default:
 				break;
 		}
@@ -2720,7 +2566,6 @@ private:
 			case 0x1:
 			case 0x3:
 			case 0x2:
-			{
 				op.ds = cast(DataSize)((selectBits ^ (selectBits >> 1)) - 1);
 
 				ushort op1 = g_ea2[(opcode >> 6) & 0x3F].d;
@@ -2733,7 +2578,6 @@ private:
 				int movea = ((op.am1 - 2) >> 3) & (op.am1 << 1);
 				op.op = cast(Instruction)(Instruction.MC68000_MOVEB + op.ds + movea);
 				break;
-			}
 			case 0x4:
 				if((opcode & 0x100) == 0x100)
 				{
@@ -2966,7 +2810,6 @@ private:
 				}
 				break;
 			case 0x6:
-			{
 				// branch opcodes
 				op.op = cast(Instruction)(Instruction.MC68000_BRA + ((opcode >> 8) & 0xF));
 				op.d0 = cast(byte)(opcode & 0xFF);
@@ -2980,7 +2823,6 @@ private:
 				else
 					op.am0 = AddressingMode.Provided;
 				break;
-			}
 			case 0x7:
 				op.op = Instruction.MC68000_MOVEQ;
 				op.d0 = cast(byte)cast(ubyte)opcode;
@@ -3202,7 +3044,6 @@ private:
 				}
 				break;
 			case 0xE:
-			{
 				// shifts and stuff
 				// ASL/ASR, LSL/LSR, ROXL/ROXR, ROL/ROR
 				ushort tmp_op = opcode;
@@ -3242,9 +3083,7 @@ private:
 				// get instruction
 				op.op = cast(Instruction)(Instruction.MC68000_ASRB + tmp_op + (op.ds << 3));
 				break;
-			}
 			case 0xF:
-			{
 				// MMU/coprocessor interface
 				int cpID = (opcode >> 9) & 7;
 
@@ -3257,7 +3096,6 @@ private:
 					// TODO: decode FPU opcode...
 				}
 				break;
-			}
 		}
 
 		return op.op == Instruction.MC68000_UNK ? false : true;
@@ -3356,26 +3194,105 @@ private:
 			case AddressingMode.IndPostInc:
 				d += 8;
 			case AddressingMode.DReg:
-				{
-					DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
-					arg.type = DisassembledOp.Arg.Type.Register;
-					arg.arg = regInfo[d].name;
-					arg.value = d;
-					break;
-				}
+				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
+				arg.type = DisassembledOp.Arg.Type.Register;
+				arg.arg = regInfo[d].name;
+				arg.value = d;
+				break;
 			case AddressingMode.IndOffset:
 			case AddressingMode.OffsetPC:
-				{
-					ushort offset = Read16(address);
-					pOpcode.programCode[pOpcode.pcWords++] = offset;
-					address += 2;
+				ushort offset = Read16(address);
+				pOpcode.programCode[pOpcode.pcWords++] = offset;
+				address += 2;
 
+				DisassembledOp.Arg* off = &pOpcode.args[pOpcode.numArgs++];
+				off.type = DisassembledOp.Arg.Type.Address;
+				off.arg.format("$%X", offset);
+				off.value = offset;
+
+				// choose register
+				if(am == AddressingMode.OffsetPC)
+					d = 16;
+				else
+					d += 8;
+
+				DisassembledOp.Arg* addr = &pOpcode.args[pOpcode.numArgs++];
+				addr.type = DisassembledOp.Arg.Type.Register;
+				addr.arg = regInfo[d].name;
+				addr.value = d;
+				break;
+			case AddressingMode.IndIndex:
+			case AddressingMode.IndexPC:
+				// fetch the extension word
+				ushort ext = Read16(address) & extensionWordMask;
+				pOpcode.programCode[pOpcode.pcWords++] = ext;
+				address += 2;
+
+				if(ext & 0x100)
+				{
+					assert(false, "WRITE ME! (HEAVY DUTY 020 ADDRESSING MODE");
+					/*
+					// calculate base address
+					address = (ext & 0x80) ? 0 : address;
+
+					// calculate base displacement
+					if(ext & 0x20)
+					{
+					if(ext & 0x10)
+					{
+					address += Read32(regs.pc);
+					regs.pc += 4;
+					}
+					else
+					{
+					address += (short)Read16(regs.pc);
+					regs.pc += 2;
+					}
+					}
+
+					// resolve post-index
+					if(ext & 0x4)
+					address = Read32(address);
+
+					// load, sign extend, and scale the index register
+					if(!(ext & 0x40))
+					{
+					int index = (int)regs.d[ext >> 12];
+					if(!(ext & 0x800))
+					index = (short)(ushort)index;
+					index <<= (ext >> 9) & 3;
+					address += index;
+					}
+
+					// resolve pre-index / indirect
+					if(!(ext & 0x4) && (ext & 0x3))
+					address = Read32(address);
+
+					// calculate outer displacement
+					if(ext & 0x2)
+					{
+					if(ext & 0x1)
+					{
+					address += Read32(regs.pc);
+					regs.pc += 4;
+					}
+					else
+					{
+					address += (short)Read16(regs.pc);
+					regs.pc += 2;
+					}
+					}
+					*/
+				}
+				else
+				{
+					// displacement
 					DisassembledOp.Arg* off = &pOpcode.args[pOpcode.numArgs++];
 					off.type = DisassembledOp.Arg.Type.Address;
-					off.arg.format("$%X", offset);
-					off.value = offset;
+					off.arg.format("$%X", ext & 0xFF);
+					off.value = ext & 0xFF;
 
-					// choose register
+					// address (or PC) reg
 					if(am == AddressingMode.OffsetPC)
 						d = 16;
 					else
@@ -3385,182 +3302,87 @@ private:
 					addr.type = DisassembledOp.Arg.Type.Register;
 					addr.arg = regInfo[d].name;
 					addr.value = d;
-					break;
-				}
-			case AddressingMode.IndIndex:
-			case AddressingMode.IndexPC:
-				{
-					// fetch the extension word
-					ushort ext = Read16(address) & extensionWordMask;
-					pOpcode.programCode[pOpcode.pcWords++] = ext;
-					address += 2;
 
-					if(ext & 0x100)
+					// index reg
+					d = ext >> 12;
+					DisassembledOp.Arg* idx = &pOpcode.args[pOpcode.numArgs++];
+					idx.type = DisassembledOp.Arg.Type.Register;
+					idx.arg = regInfo[d].name;
+					idx.arg ~= (ext & 0x800) ? ".L" : ".W";
+					idx.value = d;
+
+					// scale
+					if(ext & 0x600)
 					{
-						assert(false, "WRITE ME! (HEAVY DUTY 020 ADDRESSING MODE");
-						/*
-						// calculate base address
-						address = (ext & 0x80) ? 0 : address;
+						pOpcode.lineTemplate ~= "*%s";
 
-						// calculate base displacement
-						if(ext & 0x20)
-						{
-						if(ext & 0x10)
-						{
-						address += Read32(regs.pc);
-						regs.pc += 4;
-						}
-						else
-						{
-						address += (short)Read16(regs.pc);
-						regs.pc += 2;
-						}
-						}
-
-						// resolve post-index
-						if(ext & 0x4)
-						address = Read32(address);
-
-						// load, sign extend, and scale the index register
-						if(!(ext & 0x40))
-						{
-						int index = (int)regs.d[ext >> 12];
-						if(!(ext & 0x800))
-						index = (short)(ushort)index;
-						index <<= (ext >> 9) & 3;
-						address += index;
-						}
-
-						// resolve pre-index / indirect
-						if(!(ext & 0x4) && (ext & 0x3))
-						address = Read32(address);
-
-						// calculate outer displacement
-						if(ext & 0x2)
-						{
-						if(ext & 0x1)
-						{
-						address += Read32(regs.pc);
-						regs.pc += 4;
-						}
-						else
-						{
-						address += (short)Read16(regs.pc);
-						regs.pc += 2;
-						}
-						}
-						*/
+						// add scale arg
+						DisassembledOp.Arg* disp = &pOpcode.args[pOpcode.numArgs++];
+						disp.type = DisassembledOp.Arg.Type.Constant;
+						disp.value = 1 << ((ext >> 9) & 3);
+						off.arg.format("%d", disp.value);
 					}
-					else
-					{
-						// displacement
-						DisassembledOp.Arg* off = &pOpcode.args[pOpcode.numArgs++];
-						off.type = DisassembledOp.Arg.Type.Address;
-						off.arg.format("$%X", ext & 0xFF);
-						off.value = ext & 0xFF;
 
-						// address (or PC) reg
-						if(am == AddressingMode.OffsetPC)
-							d = 16;
-						else
-							d += 8;
-
-						DisassembledOp.Arg* addr = &pOpcode.args[pOpcode.numArgs++];
-						addr.type = DisassembledOp.Arg.Type.Register;
-						addr.arg = regInfo[d].name;
-						addr.value = d;
-
-						// index reg
-						d = ext >> 12;
-						DisassembledOp.Arg* idx = &pOpcode.args[pOpcode.numArgs++];
-						idx.type = DisassembledOp.Arg.Type.Register;
-						idx.arg = regInfo[d].name;
-						idx.arg ~= (ext & 0x800) ? ".L" : ".W";
-						idx.value = d;
-
-						// scale
-						if(ext & 0x600)
-						{
-							pOpcode.lineTemplate ~= "*%s";
-
-							// add scale arg
-							DisassembledOp.Arg* disp = &pOpcode.args[pOpcode.numArgs++];
-							disp.type = DisassembledOp.Arg.Type.Constant;
-							disp.value = 1 << ((ext >> 9) & 3);
-							off.arg.format("%d", disp.value);
-						}
-
-						pOpcode.lineTemplate ~= ")";
-					}
-					break;
+					pOpcode.lineTemplate ~= ")";
 				}
+				break;
 			case AddressingMode.AbsW:
-				{
-					ushort addr = Read16(address);
-					pOpcode.programCode[pOpcode.pcWords++] = addr;
-					address += 2;
+				ushort addr = Read16(address);
+				pOpcode.programCode[pOpcode.pcWords++] = addr;
+				address += 2;
 
-					DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
-					arg.type = DisassembledOp.Arg.Type.Address;
-					arg.value = cast(uint)cast(int)cast(short)addr & procInfo.addressMask;
-					arg.arg.format("$%X", arg.value);
-					break;
-				}
+				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
+				arg.type = DisassembledOp.Arg.Type.Address;
+				arg.value = cast(uint)cast(int)cast(short)addr & procInfo.addressMask;
+				arg.arg.format("$%X", arg.value);
+				break;
 			case AddressingMode.AbsL:
-				{
-					uint addr = Read32(address);
-					pOpcode.programCode[pOpcode.pcWords++] = (addr >> 16);
-					pOpcode.programCode[pOpcode.pcWords++] = addr & 0xFFFF;
-					address += 4;
+				uint addr = Read32(address);
+				pOpcode.programCode[pOpcode.pcWords++] = (addr >> 16);
+				pOpcode.programCode[pOpcode.pcWords++] = addr & 0xFFFF;
+				address += 4;
 
-					DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
-					arg.type = DisassembledOp.Arg.Type.Address;
-					arg.value = addr & procInfo.addressMask;
-					arg.arg.format("$%X", arg.value);
-					break;
-				}
+				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
+				arg.type = DisassembledOp.Arg.Type.Address;
+				arg.value = addr & procInfo.addressMask;
+				arg.arg.format("$%X", arg.value);
+				break;
 			case AddressingMode.Imm:
+				uint operand;
+				if(ds == DataSize.Long)
 				{
-					uint operand;
-					if(ds == DataSize.Long)
-					{
-						operand = Read32(address);
-						pOpcode.programCode[pOpcode.pcWords++] = (operand >> 16);
-						pOpcode.programCode[pOpcode.pcWords++] = operand & 0xFFFF;
-						address += 4;
-					}
-					else
-					{
-						case AddressingMode.Imm16:
-							operand = Read16(address);
-							pOpcode.programCode[pOpcode.pcWords++] = operand;
-							address += 2;
-					}
-
-					DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
-					arg.type = DisassembledOp.Arg.Type.Immediate;
-					arg.value = operand;
-					arg.arg.format("#$%X", operand);
-					break;
+					operand = Read32(address);
+					pOpcode.programCode[pOpcode.pcWords++] = (operand >> 16);
+					pOpcode.programCode[pOpcode.pcWords++] = operand & 0xFFFF;
+					address += 4;
 				}
+				else
+				{
+					case AddressingMode.Imm16:
+						operand = Read16(address);
+						pOpcode.programCode[pOpcode.pcWords++] = operand;
+						address += 2;
+				}
+
+				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
+				arg.type = DisassembledOp.Arg.Type.Immediate;
+				arg.value = operand;
+				arg.arg.format("#$%X", operand);
+				break;
 			case AddressingMode.StatusReg:
-				{
-					int reg = ds == DataSize.Byte ? 19 : 18;
+				int reg = ds == DataSize.Byte ? 19 : 18;
 
-					DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
-					arg.type = DisassembledOp.Arg.Type.Register;
-					arg.arg = regInfo[reg].name;
-					arg.value = reg;
-					break;
-				}
+				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
+				arg.type = DisassembledOp.Arg.Type.Register;
+				arg.arg = regInfo[reg].name;
+				arg.value = reg;
+				break;
 			case AddressingMode.Provided:
-				{
-					DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
-					arg.type = DisassembledOp.Arg.Type.Immediate;
-					arg.value = d;
-					arg.arg.format("#$%X", d);
-					break;
-				}
+				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
+				arg.type = DisassembledOp.Arg.Type.Immediate;
+				arg.value = d;
+				arg.arg.format("#$%X", d);
+				break;
 			default:
 				break;
 		}
@@ -4100,11 +3922,11 @@ ushort FLAG_XNZVnC(T, O)(T result, O operand0, O operand1, int bits) pure nothro
 // other helpful macros
 ushort INT_ABS16(ushort i) pure nothrow
 {
-	return cast(ushort)(((i >>> 16u) ^ i) + (i >> 15u));
+	return cast(ushort)(((i >>> 15u) ^ i) + (i >> 15u));
 }
 uint INT_ABS32(uint i) pure nothrow
 {
-	return ((i >>> 32u) ^ i) + (i >> 31u);
+	return ((i >>> 31u) ^ i) + (i >> 31u);
 }
 
 struct MC68kVersionInfo

@@ -42,7 +42,7 @@
   <nofloat>0</nofloat>
   <Dversion>2</Dversion>
   <ignoreUnsupportedPragmas>0</ignoreUnsupportedPragmas>
-  <compiler>1</compiler>
+  <compiler>0</compiler>
   <otherDMD>0</otherDMD>
   <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
   <imppath />
@@ -77,12 +77,12 @@
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
   <objfiles />
   <linkswitches />
-  <libfiles>-lsqlite -lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
+  <libfiles>sqlite.lib gdi32.lib ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
   <libpaths />
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
-  <additionalOptions>-L/SUBSYSTEM:WINDOWS</additionalOptions>
+  <additionalOptions>-L/SUBSYSTEM:WINDOWS:4.0</additionalOptions>
   <preBuildCommand />
   <postBuildCommand />
   <debugtarget>$(TARGETPATH)</debugtarget>
@@ -172,12 +172,12 @@
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
   <objfiles />
   <linkswitches />
-  <libfiles>sqlite.lib gdi32.lib ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
+  <libfiles>-lsqlite -lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
   <libpaths />
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
-  <additionalOptions>-L/SUBSYSTEM:WINDOWS:4.0</additionalOptions>
+  <additionalOptions>-mwindows</additionalOptions>
   <preBuildCommand />
   <postBuildCommand />
   <debugtarget>$(TARGETPATH)</debugtarget>
@@ -390,6 +390,7 @@
       <File path="Source\Emulator\Parts\CPU\MOS6502.d" />
       <File path="Source\Emulator\Parts\CPU\CP1600.d" />
       <File path="Source\Emulator\Parts\CPU\DEC-PDP11.d" />
+      <File path="Source\Emulator\Parts\CPU\dcpu16.d" />
      </Folder>
      <Folder name="Display">
       <File path="Source\Emulator\Parts\Display\TMS9918.d" />
@@ -411,6 +412,7 @@
      <File path="Source\Emulator\Machines\SegaGenesis.d" />
      <File path="Source\Emulator\Machines\ColecoVision.d" />
      <File path="Source\Emulator\Machines\MSX.d" />
+     <File path="Source\Emulator\Machines\Ox10c.d" />
     </Folder>
     <File path="Source\Emulator\Executor.d" />
     <File path="Source\Emulator\Machine.d" />

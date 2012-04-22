@@ -25,7 +25,7 @@ class SN76489 : SoundPart
 		this.revision = revision;
 
 		this.bSwapBits = bSwapbits;
-		int iClockFreq = cast(int)(clockfreq * 1000000.f);
+		int iClockFreq = cast(int)(clockfreq * 1000000.0f);
 		clocksPerSample = 1 + (iClockFreq << 4) / samplerate;	// No. of main clocks between each sampling instant as a 4 bit fixed point
 		internalClocksPerToggle = clocksPerSample >> 4;			// internal divide by 16
 
@@ -238,7 +238,7 @@ protected:
 		noiseVolume = 0;
 		auxInput = 0;
 		SetSampleRates();
-		prevSample = 0.0f;
+		prevSample = 0.f;
 		noise = noiseW;
 	}
 

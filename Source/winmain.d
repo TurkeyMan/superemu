@@ -57,7 +57,8 @@ int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int
 	RomInstance* rom = db.FindRom("FantasyZone");
 
 	// create the machine
-	Machine machine = CreateSystem(rom, db);
+//	Machine machine = CreateSystem(rom, db);
+	Machine machine = CreateSystem(rom, db, "Ox10c");
 
 	// init the display
 	windowSize = machine.GetDisplay().DisplaySize;

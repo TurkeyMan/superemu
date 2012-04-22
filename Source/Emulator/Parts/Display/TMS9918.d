@@ -124,7 +124,7 @@ class TMS9918 : Part
 		DisplayProperties desc;
 		desc.size = DisplayDimensions(displayWidth, displayHeight);
 		desc.rotation = DisplayRotation.None;
-		desc.aspectRatio = 4.f/3.f;
+		desc.aspectRatio = 4.0f/3.0f;
 		Display display = machine.CreateDisplay(desc);
 
 		// create a render layer

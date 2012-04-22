@@ -14,13 +14,13 @@ class SoundPart : Processor
 		super(machine, name, features);
 
 		this.sampleRate = sampleRate;
-		this.clockRate = cast(int)(clockRate * 1000000.f);
+		this.clockRate = cast(int)(clockRate * 1000000.0f);
 		samplesPerFrame = sampleRate / 60;
 		ticksPerSample = this.clockRate / sampleRate;
 
 		this.numChannels = numChannels;
 		this.pan = pan;
-		outputLevel = 1.f;
+		outputLevel = 1.0f;
 
 		resampleCounter = 0;
 		mutex = new Mutex;
@@ -54,7 +54,7 @@ class SoundPart : Processor
 		samplesRemaining += compensation;
 		ticksPerSample = clockRate / (samplesRemaining * 60);
 
-		// float pc = ((float)bufferLevel / (float)SOUNDBUFFER_SIZE) * 100.f;
+		// float pc = ((float)bufferLevel / (float)SOUNDBUFFER_SIZE) * 100.0f;
 		// Logf("Begin %s: %d (%d), level: %d (%g%%%%)", name, samplesRemaining, compensation, bufferLevel, pc);
 
 		return samplesRemaining;
@@ -134,8 +134,8 @@ private:
 			numAvailable = numRequested;
 		}
 
-		float volL = clamp(0.f, 1.f - pan, 1.f) * outputLevel;
-		float volR = clamp(0.f, 1.f + pan, 1.f) * outputLevel;
+		float volL = clamp(0.0f, 1.0f - pan, 1.0f) * outputLevel;
+		float volR = clamp(0.0f, 1.0f + pan, 1.0f) * outputLevel;
 		float[] right = numChannels == 1 ? samplesL : samplesR;
 
 		while(numAvailable--)

@@ -80,7 +80,7 @@ class Display
 
 		void SetDirty() { bDirty = true; }
 
-		void SetPalette(uint[] palette)
+		void SetPalette(const(uint)[] palette)
 		{
 			pendingPalette = palette;
 		}
@@ -92,7 +92,7 @@ class Display
 		int currentBackBuffer;
 
 		uint[] palette;
-		uint[] pendingPalette;
+		const(uint)[] pendingPalette;
 
 		bool bDirty;
 

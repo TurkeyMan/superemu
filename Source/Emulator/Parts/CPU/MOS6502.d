@@ -7,7 +7,7 @@ import demu.emulator.parts.processor;
 
 import std.string;
 
-class Z80 : Processor
+class MOS6502 : Processor
 {
 	enum Version
 	{
@@ -288,7 +288,6 @@ class Z80 : Processor
 			switch(op)
 			{
 				case Instruction.ADC:
-				{
 					int result;
 					if(registers.sr & SR_Decimal)
 					{
@@ -303,7 +302,6 @@ class Z80 : Processor
 					FLAGNZCV(result, operand);
 					registers.ac = cast(ubyte)result;
 					break;
-				}
 
 				case Instruction.AND:
 					registers.ac &= operand;
@@ -386,7 +384,6 @@ class Z80 : Processor
 					break;
 
 				case Instruction.BRK:
-				{
 					ubyte sr = registers.sr | SR_Break; // the B flag is pushed to the stack
 					registers.sr |= SR_Interrupt;       // the I flag is set
 					registers.pc++;                     // BRK stores PC+2 on the stack
@@ -404,7 +401,6 @@ class Z80 : Processor
 					// allow the debugger to break
 //					machine.DebugBreak("BRK instruction reached", BR_HaltInstruction);
 					break;
-				}
 
 				case Instruction.BVC:
 					if(!(registers.sr & SR_Overflow))
@@ -594,22 +590,20 @@ class Z80 : Processor
 					break;
 
 				case Instruction.SBC:
+					int result;
+					if(registers.sr & SR_Decimal)
 					{
-						int result;
-						if(registers.sr & SR_Decimal)
-						{
-							int ln = (registers.ac & 0xF) - (operand & 0xF) - (~registers.sr & SR_Carry);
-							if(ln & 0x10) ln -= 6;
-							int hn = (registers.ac >> 4) - (operand >> 4) - ((ln & 0x10) >> 4);
-							if(hn & 0x10) hn -= 6;
-							result = (ln & 0xF) | (hn << 4);
-						}
-						else
-							result = registers.ac - operand - (~registers.sr & SR_Carry);
-						FLAGNZnCV(result, operand);
-						registers.ac = cast(ubyte)result;
-						break;
+						int ln = (registers.ac & 0xF) - (operand & 0xF) - (~registers.sr & SR_Carry);
+						if(ln & 0x10) ln -= 6;
+						int hn = (registers.ac >> 4) - (operand >> 4) - ((ln & 0x10) >> 4);
+						if(hn & 0x10) hn -= 6;
+						result = (ln & 0xF) | (hn << 4);
 					}
+					else
+						result = registers.ac - operand - (~registers.sr & SR_Carry);
+					FLAGNZnCV(result, operand);
+					registers.ac = cast(ubyte)result;
+					break;
 
 				case Instruction.SEC:
 					registers.sr |= SR_Carry;
@@ -671,12 +665,10 @@ class Z80 : Processor
 					break;
 
 				default:
-				{
 					// invalid opcode!
 //					machine.DebugBreak("Illegal opcode", BR_IllegalOpcode);
 //					assert(false, "Unknown opcode!");
 					break;
-				}
 			}
 
 			static if(EnableDissassembly)
@@ -766,55 +758,52 @@ class Z80 : Processor
 			case AddressingMode.Immediate:
 			case AddressingMode.ZeroPage:
 			case AddressingMode.Relative:
+				// ops with 8 bit arg
+				uint value = Read8(address++);
+				pOpcode.programCode[pOpcode.pcWords++] = cast(ubyte)value;
+
+				++pOpcode.numArgs;
+				if(addressMode == AddressingMode.Relative)
 				{
-					// ops with 8 bit arg
-					uint value = Read8(address++);
-					pOpcode.programCode[pOpcode.pcWords++] = cast(ubyte)value;
-
-					++pOpcode.numArgs;
-					if(addressMode == AddressingMode.Relative)
-					{
-						pOpcode.args[0].arg.format("$%04X", address + cast(byte)value); // calculate relative address
-						pOpcode.args[0].value = address + cast(byte)value;
-						pOpcode.args[0].type = DisassembledOp.Arg.Type.JumpTarget;
-						pOpcode.flags |= DisassembledOp.Flags.Branch;
-					}
-					else if(addressMode == AddressingMode.Immediate)
-					{
-						pOpcode.args[0].arg.format("#$%02X", value);
-						pOpcode.args[0].value = value;
-						pOpcode.args[0].type = DisassembledOp.Arg.Type.Immediate;
-					}
-					else
-					{
-						pOpcode.args[0].arg.format("$%02X", value);
-						pOpcode.args[0].value = value;
-						pOpcode.args[0].type = DisassembledOp.Arg.Type.Address;
-
-						if (op == Instruction.JMP || op == Instruction.JSR)
-							pOpcode.args[0].type = DisassembledOp.Arg.Type.JumpTarget;
-					}
-					break;
+					pOpcode.args[0].arg.format("$%04X", address + cast(byte)value); // calculate relative address
+					pOpcode.args[0].value = address + cast(byte)value;
+					pOpcode.args[0].type = DisassembledOp.Arg.Type.JumpTarget;
+					pOpcode.flags |= DisassembledOp.Flags.Branch;
 				}
+				else if(addressMode == AddressingMode.Immediate)
+				{
+					pOpcode.args[0].arg.format("#$%02X", value);
+					pOpcode.args[0].value = value;
+					pOpcode.args[0].type = DisassembledOp.Arg.Type.Immediate;
+				}
+				else
+				{
+					pOpcode.args[0].arg.format("$%02X", value);
+					pOpcode.args[0].value = value;
+					pOpcode.args[0].type = DisassembledOp.Arg.Type.Address;
+
+					if (op == Instruction.JMP || op == Instruction.JSR)
+						pOpcode.args[0].type = DisassembledOp.Arg.Type.JumpTarget;
+				}
+				break;
 
 			case AddressingMode.AbsoluteX:
 			case AddressingMode.AbsoluteY:
 			case AddressingMode.Absolute:
 			case AddressingMode.Indirect:
-				{
-					// ops with 16 bit arg
-					uint value = Read16_LE(address);
-					address += 2;
+				// ops with 16 bit arg
+				uint value = Read16_LE(address);
+				address += 2;
 
-					pOpcode.programCode[pOpcode.pcWords++] = cast(ubyte)(value & 0xFF);
-					pOpcode.programCode[pOpcode.pcWords++] = cast(ubyte)(value >> 8);
+				pOpcode.programCode[pOpcode.pcWords++] = cast(ubyte)(value & 0xFF);
+				pOpcode.programCode[pOpcode.pcWords++] = cast(ubyte)(value >> 8);
 
-					++pOpcode.numArgs;
-					pOpcode.args[0].arg.format("$%04X", value);
-					pOpcode.args[0].value = value;
-					pOpcode.args[0].type = (op == Instruction.JMP || op == Instruction.JSR) ? DisassembledOp.Arg.Type.JumpTarget : DisassembledOp.Arg.Type.ReadAddress;
-					break;
-				}
+				++pOpcode.numArgs;
+				pOpcode.args[0].arg.format("$%04X", value);
+				pOpcode.args[0].value = value;
+				pOpcode.args[0].type = (op == Instruction.JMP || op == Instruction.JSR) ? DisassembledOp.Arg.Type.JumpTarget : DisassembledOp.Arg.Type.ReadAddress;
+				break;
+
 			default:
 				break;
 		}

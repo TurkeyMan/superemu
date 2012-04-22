@@ -482,65 +482,63 @@ class Z80 : Processor
 					regs.Fn = 1;
 					break;
 				case Instruction.DAA:
-					{
-						ubyte addVal=0;
-						ubyte low = regs.A&0xf;
-						ubyte high = (regs.A&0xf0)>>4;
+					ubyte addVal=0;
+					ubyte low = regs.A&0xf;
+					ubyte high = (regs.A&0xf0)>>4;
 
-						if(!regs.Fn)                       // N=0 : Moving Up?
+					if(!regs.Fn)                       // N=0 : Moving Up?
+					{
+						if(!regs.Fc)                                           // Carry was clear
 						{
-							if(!regs.Fc)                                           // Carry was clear
-							{
-								if( (high<=0x08) && (!regs.Fh) && (low>=0x0a) )
-									addVal = 0x06;
-								else if( (high<=0x09) && (regs.Fh) && (low<=0x03) )
-									addVal = 0x06;
-								else if( (high>=0x0a) && (!regs.Fh) && (low<=0x09) )
-									addVal = 0x60;
-								else if( (high>=0x09) && (!regs.Fh) && (low>=0x0a) )
-									addVal = 0x66;
-								else if( (high>=0x0a) && (regs.Fh) && (low<=0x03) )
-									addVal = 0x66;
-							}
-							else                                                        // Carry was set
-							{
-								if( (high<=0x02) && (!regs.Fh) && (low<=0x09) )
-									addVal = 0x60;
-								else if( (high<=0x02) && (!regs.Fh) && (low>=0x0a) )
-									addVal = 0x66;
-								else if( (high<=0x03) && (regs.Fh) && (low<=0x03) )
-									addVal = 0x66;
-							}
-							regs.Fc = 0;
-							if(addVal >= 0x60)
-								regs.Fc = 1;
+							if( (high<=0x08) && (!regs.Fh) && (low>=0x0a) )
+								addVal = 0x06;
+							else if( (high<=0x09) && (regs.Fh) && (low<=0x03) )
+								addVal = 0x06;
+							else if( (high>=0x0a) && (!regs.Fh) && (low<=0x09) )
+								addVal = 0x60;
+							else if( (high>=0x09) && (!regs.Fh) && (low>=0x0a) )
+								addVal = 0x66;
+							else if( (high>=0x0a) && (regs.Fh) && (low<=0x03) )
+								addVal = 0x66;
 						}
-						else                              // N=1 : Moving Down  (NOTE: carry remains as it was before)
+						else                                                        // Carry was set
+						{
+							if( (high<=0x02) && (!regs.Fh) && (low<=0x09) )
+								addVal = 0x60;
+							else if( (high<=0x02) && (!regs.Fh) && (low>=0x0a) )
+								addVal = 0x66;
+							else if( (high<=0x03) && (regs.Fh) && (low<=0x03) )
+								addVal = 0x66;
+						}
+						regs.Fc = 0;
+						if(addVal >= 0x60)
+							regs.Fc = 1;
+					}
+					else                              // N=1 : Moving Down  (NOTE: carry remains as it was before)
+					{
+						if(!regs.Fc)
+						{
+							if(regs.Fh)
+							{
+								if( (high <= 0x08) && (low >= 0x06) )
+									addVal = 0xfa;
+							}
+						}
+						else                          // Carry was set
 						{
 							if(!regs.Fc)
 							{
-								if(regs.Fh)
-								{
-									if( (high <= 0x08) && (low >= 0x06) )
-										addVal = 0xfa;
-								}
+								if( (high >= 0x07) && (low <= 0x09) )
+									addVal = 0xa0;
 							}
-							else                          // Carry was set
+							else                        // H=1
 							{
-								if(!regs.Fh)             // H=0
-								{
-									if( (high >= 0x07) && (low <= 0x09) )
-										addVal = 0xa0;
-								}
-								else                        // H=1
-								{
-									if( (high >= 0x06) && (low >= 0x06) )
-										addVal = 0x9a;
-								}
+								if( (high >= 0x06) && (low >= 0x06) )
+									addVal = 0x9a;
 							}
 						}
-						regs.A = (regs.A+addVal)&0xFF;
 					}
+					regs.A = (regs.A+addVal)&0xFF;
 					break;
 				case Instruction.DEC:
 					result = GetReg8PreDec(targetA);
@@ -1349,53 +1347,51 @@ class Z80 : Processor
 					return pOpcode.pcWords;
 				case 0xDD:
 				case 0xFD:
+					ubyte opcode2 = memmap.Read8(address++ & procInfo.addressMask);
+					pOpcode.programCode[pOpcode.pcWords++] = opcode2;
+
+					if(opcode2 == 0xCB)
 					{
-						ubyte opcode2 = memmap.Read8(address++ & procInfo.addressMask);
-						pOpcode.programCode[pOpcode.pcWords++] = opcode2;
+						ubyte arg1 = opcode == 0xDD ? Idx_IX : Idx_IY;
 
-						if(opcode2 == 0xCB)
-						{
-							ubyte arg1 = opcode == 0xDD ? Idx_IX : Idx_IY;
+						// handle XXCB as a special case
+						ubyte programByte = memmap.Read8(address + 1 & procInfo.addressMask);
+						opcode = programByte;
 
-							// handle XXCB as a special case
-							ubyte programByte = memmap.Read8(address + 1 & procInfo.addressMask);
-							opcode = programByte;
+						CBImm = (opcode >> 3) & 7; // look up the CB immediate arg
+						opcode = (opcode & 7) | ((opcode >> 3) & 0x18); // remove the immediate bits
+						op = cast(Instruction)opcodeTableXXCB[opcode].op;
 
-							CBImm = (opcode >> 3) & 7; // look up the CB immediate arg
-							opcode = (opcode & 7) | ((opcode >> 3) & 0x18); // remove the immediate bits
-							op = cast(Instruction)opcodeTableXXCB[opcode].op;
+						pOpcode.lineTemplate ~= " ";
 
-							pOpcode.lineTemplate ~= " ";
-
-							// the shift ops are packed
-							if(op == Instruction.SHIFT)
-								op = cbShift[CBImm];
-							else
-							{
-								AddLiteralArgument(pOpcode, CBImm, false);
-								pOpcode.lineTemplate ~= ",";
-							}
-							AddArgument(pOpcode, address, arg1);
-
-							if(opcodeTableXXCB[opcode].arg2)
-							{
-								pOpcode.lineTemplate ~= "->";
-								AddArgument(pOpcode, address, opcodeTableXXCB[opcode].arg2);
-							}
-
-							pOpcode.programCode[pOpcode.pcWords++] = programByte;
-
-							pOpcode.instructionName = sOpcodeNames[op];
-							return pOpcode.pcWords;
-						}
+						// the shift ops are packed
+						if(op == Instruction.SHIFT)
+							op = cbShift[CBImm];
 						else
 						{
-							pOpcodeTable = opcode == 0xDD ? opcodeTableDD : opcodeTableFD;
-							op = cast(Instruction)pOpcodeTable[opcode2].op;
-							opcode = opcode2;
+							AddLiteralArgument(pOpcode, CBImm, false);
+							pOpcode.lineTemplate ~= ",";
 						}
-						break;
+						AddArgument(pOpcode, address, arg1);
+
+						if(opcodeTableXXCB[opcode].arg2)
+						{
+							pOpcode.lineTemplate ~= "->";
+							AddArgument(pOpcode, address, opcodeTableXXCB[opcode].arg2);
+						}
+
+						pOpcode.programCode[pOpcode.pcWords++] = programByte;
+
+						pOpcode.instructionName = sOpcodeNames[op];
+						return pOpcode.pcWords;
 					}
+					else
+					{
+						pOpcodeTable = opcode == 0xDD ? opcodeTableDD : opcodeTableFD;
+						op = cast(Instruction)pOpcodeTable[opcode2].op;
+						opcode = opcode2;
+					}
+					break;
 				case 0xED:
 					opcode = memmap.Read8(address++ & procInfo.addressMask);
 					pOpcode.programCode[pOpcode.pcWords++] = opcode;
@@ -1648,7 +1644,6 @@ protected:
 				switch(arg & 0x7)
 				{
 					case 0:
-					{
 						ubyte imm = memmap.Read8(address++ & procInfo.addressMask);
 						pOpcode.programCode[pOpcode.pcWords++] = imm;
 						pArg.arg.format("$%02X", imm);
@@ -1656,9 +1651,8 @@ protected:
 						pArg.type = DisassembledOp.Arg.Type.Immediate;
 						syntax = "%s";
 						break;
-					}
+
 					case 1:
-					{
 						// 16 bit immediate
 						ushort imm = memmap.Read16_LE(address & procInfo.addressMask);
 						address += 2;
@@ -1669,9 +1663,8 @@ protected:
 						pArg.type = (arg & AF_Ind) ? DisassembledOp.Arg.Type.ReadAddress : DisassembledOp.Arg.Type.Immediate;
 						syntax = "%s";
 						break;
-					}
+
 					case 2:
-					{
 						// relative address
 						byte offset = cast(byte)memmap.Read8(address++ & procInfo.addressMask);
 						pOpcode.programCode[pOpcode.pcWords++] = cast(ubyte)offset;
@@ -1680,9 +1673,8 @@ protected:
 						pArg.type = DisassembledOp.Arg.Type.JumpTarget;
 						syntax = "%s";
 						break;
-					}
+
 					case 3:
-					{
 						// index X
 						pArg.arg = "IX";
 						pArg.type = DisassembledOp.Arg.Type.Register;
@@ -1696,9 +1688,8 @@ protected:
 						pArg.type = DisassembledOp.Arg.Type.Constant;
 						syntax = "%s+%s";
 						break;
-					}
+
 					case 4:
-					{
 						// index Y
 						pArg.arg = "IY";
 						pArg.type = DisassembledOp.Arg.Type.Register;
@@ -1712,7 +1703,7 @@ protected:
 						pArg.type = DisassembledOp.Arg.Type.Constant;
 						syntax = "%s+%s";
 						break;
-					}
+
 					default:
 						// not defined!
 						assert(false, "Shouldn't be here!");

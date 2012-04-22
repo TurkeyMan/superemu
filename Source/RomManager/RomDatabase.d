@@ -37,6 +37,8 @@ class RomDatabase
 		// scan local roms... (we will want to defer this to a separate thread and update in the background)
 		RomInstance[] scanRoms = ScanRoms(this, roms);
 		UpdateLocalRoms(scanRoms);
+
+		// fetch metadata from: http://api.superfamicom.org/1/game/[int crc, crc32, md5, sha1, sha256]
 	}
 
 	void Close()
@@ -143,7 +145,7 @@ private:
 		// remove any that were missing
 		RomInstance[] updated;
 
-		int[] removed; // key's of removed items
+		uint[] removed; // key's of removed items
 		int lastMissing = -1;
 		foreach(i, b; exists)
 		{
