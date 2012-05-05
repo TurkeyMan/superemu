@@ -4,6 +4,7 @@
   <obj>0</obj>
   <link>0</link>
   <lib>0</lib>
+  <subsystem>2</subsystem>
   <multiobj>0</multiobj>
   <singleFileCompilation>0</singleFileCompilation>
   <oneobj>0</oneobj>
@@ -45,7 +46,7 @@
   <compiler>0</compiler>
   <otherDMD>0</otherDMD>
   <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
-  <imppath />
+  <imppath>$(DMDInstallDir)src\libs</imppath>
   <fileImppath />
   <outdir>$(ConfigurationName)</outdir>
   <objdir>$(OutDir)</objdir>
@@ -82,7 +83,7 @@
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
-  <additionalOptions>-L/SUBSYSTEM:WINDOWS:4.0</additionalOptions>
+  <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
   <debugtarget>$(TARGETPATH)</debugtarget>
@@ -99,6 +100,7 @@
   <obj>0</obj>
   <link>0</link>
   <lib>0</lib>
+  <subsystem>2</subsystem>
   <multiobj>0</multiobj>
   <singleFileCompilation>0</singleFileCompilation>
   <oneobj>0</oneobj>
@@ -172,12 +174,12 @@
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
   <objfiles />
   <linkswitches />
-  <libfiles>-lsqlite -lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
+  <libfiles>-lsqlite3 -lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
   <libpaths />
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
-  <additionalOptions>-mwindows</additionalOptions>
+  <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
   <debugtarget>$(TARGETPATH)</debugtarget>
@@ -185,7 +187,7 @@
   <debugworkingdir />
   <debugattach>0</debugattach>
   <debugremote />
-  <debugEngine>0</debugEngine>
+  <debugEngine>1</debugEngine>
   <debugStdOutToOutputWindow>0</debugStdOutToOutputWindow>
   <pauseAfterRunning>0</pauseAfterRunning>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
@@ -194,6 +196,7 @@
   <obj>0</obj>
   <link>0</link>
   <lib>0</lib>
+  <subsystem>2</subsystem>
   <multiobj>0</multiobj>
   <singleFileCompilation>0</singleFileCompilation>
   <oneobj>0</oneobj>
@@ -265,14 +268,14 @@
   <runargs />
   <runCv2pdb>1</runCv2pdb>
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
-  <objfiles />
+  <objfiles>sqlite3.o</objfiles>
   <linkswitches />
-  <libfiles>sqlite.lib gdi32.lib ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
+  <libfiles>-lsqlite3 -lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
   <libpaths />
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
-  <additionalOptions>-L/SUBSYSTEM:WINDOWS</additionalOptions>
+  <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
   <debugtarget>$(TARGETPATH)</debugtarget>
@@ -280,8 +283,8 @@
   <debugworkingdir />
   <debugattach>0</debugattach>
   <debugremote />
-  <debugEngine>1</debugEngine>
-  <debugStdOutToOutputWindow>0</debugStdOutToOutputWindow>
+  <debugEngine>0</debugEngine>
+  <debugStdOutToOutputWindow>1</debugStdOutToOutputWindow>
   <pauseAfterRunning>0</pauseAfterRunning>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
@@ -289,6 +292,7 @@
   <obj>0</obj>
   <link>0</link>
   <lib>0</lib>
+  <subsystem>2</subsystem>
   <multiobj>0</multiobj>
   <singleFileCompilation>0</singleFileCompilation>
   <oneobj>0</oneobj>
@@ -360,14 +364,14 @@
   <runargs />
   <runCv2pdb>1</runCv2pdb>
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
-  <objfiles />
+  <objfiles>sqlite3.o</objfiles>
   <linkswitches />
-  <libfiles>sqlite.lib gdi32.lib ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
+  <libfiles>-lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
   <libpaths />
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
-  <additionalOptions>-L/SUBSYSTEM:WINDOWS:4.0</additionalOptions>
+  <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
   <debugtarget>$(TARGETPATH)</debugtarget>
@@ -375,63 +379,63 @@
   <debugworkingdir />
   <debugattach>0</debugattach>
   <debugremote />
-  <debugEngine>0</debugEngine>
+  <debugEngine>1</debugEngine>
   <debugStdOutToOutputWindow>0</debugStdOutToOutputWindow>
   <pauseAfterRunning>0</pauseAfterRunning>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Folder name="DEmu">
-  <Folder name="Source">
-   <Folder name="Emulator">
-    <Folder name="Parts">
-     <Folder name="CPU">
-      <File path="Source\Emulator\Parts\CPU\Z80.d" />
-      <File path="Source\Emulator\Parts\CPU\MC68000.d" />
-      <File path="Source\Emulator\Parts\CPU\MOS6502.d" />
-      <File path="Source\Emulator\Parts\CPU\CP1600.d" />
-      <File path="Source\Emulator\Parts\CPU\DEC-PDP11.d" />
-      <File path="Source\Emulator\Parts\CPU\dcpu16.d" />
+  <Folder name="src">
+   <Folder name="emulator">
+    <Folder name="parts">
+     <Folder name="cpu">
+      <File path="src\emulator\parts\cpu\cp1600.d" />
+      <File path="src\emulator\parts\cpu\dcpu16.d" />
+      <File path="src\emulator\parts\cpu\mc68000.d" />
+      <File path="src\emulator\parts\cpu\mos6502.d" />
+      <File path="src\emulator\parts\cpu\pdp11.d" />
+      <File path="src\emulator\parts\cpu\z80.d" />
      </Folder>
-     <Folder name="Display">
-      <File path="Source\Emulator\Parts\Display\TMS9918.d" />
+     <Folder name="display">
+      <File path="src\emulator\parts\display\tms9918.d" />
      </Folder>
-     <Folder name="IO">
-      <File path="Source\Emulator\Parts\IO\I8255.d" />
-      <File path="Source\Emulator\Parts\IO\MOS6532.d" />
+     <Folder name="io">
+      <File path="src\emulator\parts\io\i8255.d" />
+      <File path="src\emulator\parts\io\mos6532.d" />
      </Folder>
-     <Folder name="Sound">
-      <File path="Source\Emulator\Parts\Sound\SN76489.d" />
+     <Folder name="sound">
+      <File path="src\emulator\parts\sound\sn76489.d" />
      </Folder>
-     <Folder name="Protection" />
-     <File path="Source\Emulator\Parts\Part.d" />
-     <File path="Source\Emulator\Parts\Processor.d" />
-     <File path="Source\Emulator\Parts\SoundPart.d" />
+     <Folder name="protection" />
+     <File path="src\emulator\parts\part.d" />
+     <File path="src\emulator\parts\processor.d" />
+     <File path="src\emulator\parts\soundpart.d" />
     </Folder>
-    <Folder name="Systems">
-     <File path="Source\Emulator\Machines\SegaMasterSystem.d" />
-     <File path="Source\Emulator\Machines\SegaGenesis.d" />
-     <File path="Source\Emulator\Machines\ColecoVision.d" />
-     <File path="Source\Emulator\Machines\MSX.d" />
-     <File path="Source\Emulator\Machines\Ox10c.d" />
+    <Folder name="systems">
+     <File path="src\emulator\machines\colecovision.d" />
+     <File path="src\emulator\machines\msx.d" />
+     <File path="src\emulator\machines\segagenesis.d" />
+     <File path="src\emulator\machines\segamastersystem.d" />
+     <File path="src\emulator\machines\x10c.d" />
     </Folder>
-    <File path="Source\Emulator\Executor.d" />
-    <File path="Source\Emulator\Machine.d" />
-    <File path="Source\Emulator\MemMap.d" />
-    <File path="Source\Emulator\Debugger.d" />
-    <File path="Source\Emulator\Display.d" />
-    <File path="Source\Emulator\SystemRegistry.d" />
+    <File path="src\emulator\debugger.d" />
+    <File path="src\emulator\display.d" />
+    <File path="src\emulator\executor.d" />
+    <File path="src\emulator\machine.d" />
+    <File path="src\emulator\memmap.d" />
+    <File path="src\emulator\systemregistry.d" />
    </Folder>
-   <Folder name="RomManager">
-    <File path="Source\RomManager\RomScanner.d" />
-    <File path="Source\RomManager\RomDatabase.d" />
-    <File path="Source\RomManager\Game.d" />
+   <Folder name="rommanager">
+    <File path="src\rommanager\game.d" />
+    <File path="src\rommanager\romdatabase.d" />
+    <File path="src\rommanager\romscanner.d" />
    </Folder>
-   <Folder name="Tools">
-    <File path="Source\Tools\Util.d" />
-    <File path="Source\Tools\SQLiteDB.d" />
-    <File path="Source\Tools\Error.d" />
+   <Folder name="tools">
+    <File path="src\tools\error.d" />
+    <File path="src\tools\sqlitedb.d" />
+    <File path="src\tools\util.d" />
    </Folder>
-   <File path="Source\winmain.d" />
+   <File path="src\winmain.d" />
   </Folder>
  </Folder>
 </DProject>

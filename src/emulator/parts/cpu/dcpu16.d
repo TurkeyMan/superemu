@@ -67,88 +67,98 @@ class DCPU_16 : Processor
 
 			ulong cc = cycleCount;
 
-			if (instruction.opcode != Instruction.Opcode.NonBasic)
+			Word a, b;
+			if (instruction.opcode != Instruction.Opcode.NonBasic) {
 				cycleCount += cycles(instruction);
+				a = read(instruction.a);
+				b = read(instruction.b);
+			} else {
+				a = read(instruction.a);
+				assert(instruction.nonbasic == Instruction.NonBasicOpcode.JSR);
+				cycleCount += 2 + cycles(instruction.a);
+			}
 
-			bool ald, bld;
-			ushort a = read(instruction.a);
-			ushort b = read(instruction.b);
-			final switch (instruction.opcode) with (Instruction.Opcode)
-			{
-				case NonBasic:
-					assert(instruction.nonbasic == Instruction.Opcode.NonBasic);
-					cycleCount += 2 + cycles(instruction.a) + cycles(instruction.b);
+			final switch (instruction.opcode) with (Instruction.Opcode) {
+				case NonBasic:  // This just does JSR for now, as it's the only non-basic OP.
 					memmap.Write16_BE_Aligned(--SP, PC);
-					PC = A;
+					PC = a.v;
 					break;
 				case SET:
-					write(instruction.a, a, b);
+					if (a.p) *a.p = b.v;
 					break;
 				case ADD:
-					write(instruction.a, a, cast(ushort) (a + b));
-					if (a + b > ushort.max) O = 0x0001;
+					if (a.p) *a.p = cast(ushort) (a.v + b.v);
+					if (a.v + b.v > ushort.max) O = 0x0001;
 					else O = 0;
 					break;
 				case SUB:
-					write(instruction.a, a, cast(ushort) (a - b));
-					if (a - b > ushort.max) O = 0xFFFF;
+					if (a.p) *a.p = cast(ushort) (a.v - b.v);
+					if (a.v - b.v > ushort.max) O = 0xFFFF;
 					else O = 0;
 					break;
 				case MUL:
-					write(instruction.a, a, cast(ushort) (a * b));
-					O = ((a * b) >> 16) & 0xFFFF;
+					if (a.p) *a.p = cast(ushort) (a.v * b.v);
+					O = ((a.v * b.v) >> 16) & 0xFFFF;
 					break;
 				case DIV:
-					if (b != 0) {
-						write(instruction.a, a, cast(ushort) (a / b));
-						O = ((a << 16) / b) & 0xFFFF;
+					if (b.v != 0 && a.p) {
+						*a.p = cast(ushort) (a.v / b.v);
+						O = ((a.v << 16) / b.v) & 0xFFFF;
+					} else if (a.p) {
+						*a.p = 0;
+						O = 0;
 					} else {
-						write(instruction.a, a, 0);
 						O = 0;
 					}
 					break;
 				case MOD:
-					if (b == 0) write(instruction.a, a, 0);
-					else write(instruction.a, a, a % b);
+					if (a.p) {
+						if (b.v == 0) *a.p = 0;
+						else *a.p = a.v % b.v;
+					}
 					break;
 				case SHL:
-					write(instruction.a, a, cast(ushort) (a << b));
-					O = ((a << b) >> 16) & 0xFFFF;
+					if (a.p) *a.p = cast(ushort) (a.v << b.v);
+					O = ((a.v << b.v) >> 16) & 0xFFFF;
 					break;
 				case SHR:
-					write(instruction.a, a, cast(ushort) (a >> b));
-					O = ((a << 16) >> b) & 0xFFFF;
+					if (a.p) *a.p = cast(ushort) (a.v >> b.v);
+					O = ((a.v << 16) >> b.v) & 0xFFFF;
 					break;
 				case AND:
-					write(instruction.a, a, cast(ushort) (a & b));
+					if (a.p) *a.p = cast(ushort) (a.v & b.v);
 					break;
 				case BOR:
-					write(instruction.a, a, cast(ushort) (a | b));
+					if (a.p) *a.p = cast(ushort) (a.v | b.v);
 					break;
 				case XOR:
-					write(instruction.a, a, cast(ushort) (a ^ b));
+					if (a.p) *a.p = cast(ushort) (a.v ^ b.v);
 					break;
 				case IFE:
-					if (a != b) {
-						PC++;
+					if (a.v != b.v) {
+						Instruction i = decode(memmap.Read16_BE_Aligned(PC++));
+						skip(i);
 						cycleCount++;
 					}
 					break;
 				case IFN:
-					if (a == b) {
-						PC++;
+					if (a.v == b.v) {
+						Instruction i = decode(memmap.Read16_BE_Aligned(PC++));
+						skip(i);
 						cycleCount++;
 					}
 					break;
 				case IFG:
-					if (a <= b) {
-						PC++;
+					if (a.v <= b.v) {
+						Instruction i = decode(memmap.Read16_BE_Aligned(PC++));
+						skip(i);
 						cycleCount++;
 					}
 					break;
 				case IFB:
-					if ((a & b) == 0) {
-						PC++;
+					if ((a.v & b.v) == 0) {
+						Instruction i = decode(memmap.Read16_BE_Aligned(PC++));
+						skip(i);
 						cycleCount++;
 					}
 					break;
@@ -207,6 +217,8 @@ private:
 		}
 	}
 
+	ushort[0x10000] memory;
+
 	Instruction decode(ushort op) pure @safe
 	{
 		Instruction instruction;
@@ -232,93 +244,92 @@ private:
 		return instruction;
 	}
 
-	protected final void write(in Instruction.Value location, in ushort p, in ushort val)
+    protected final Word read(in Instruction.Value location) pure @safe
     {
-        switch(location) with (Instruction)
-		{
-			case Value.A: A = val; break;
-			case Value.B: B = val; break;
-			case Value.C: C = val; break;
-			case Value.X: X = val; break;
-			case Value.Y: Y = val; break;
-			case Value.Z: Z = val; break;
-			case Value.I: I = val; break;
-			case Value.J: J = val; break;
-			case Value.LDA: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDB: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDC: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDX: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDY: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDZ: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDI: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDJ: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCA: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCB: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCC: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCX: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCY: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCZ: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCI: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.LDPCJ: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.POP: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.PEEK: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.PUSH: memmap.Write16_BE_Aligned(p, val); break;
-			case Value.SP: SP = val; break;
-			case Value.PC: PC = val; break;
-			case Value.O: O = val; break;
-			case Value.LDNXT: memmap.Write16_BE_Aligned(p, val); break;
-			default: break;
-        }
-    }
-
-    /**
-	* Read word at location.
-	* If the value uses indirection, the last layer is not performed --
-	* that's left up to write.
-	* See: write
-	*/
-    protected final ushort read(in Instruction.Value location)
-    {
-        switch (location) with (Instruction)
-		{
-			case Value.A: return A;
-			case Value.B: return B;
-			case Value.C: return C;
-			case Value.X: return X;
-			case Value.Y: return Y;
-			case Value.Z: return Z;
-			case Value.I: return I;
-			case Value.J: return J;
-			case Value.LDA: return A;
-			case Value.LDB: return B;
-			case Value.LDC: return C;
-			case Value.LDX: return X;
-			case Value.LDY: return Y;
-			case Value.LDZ: return Z;
-			case Value.LDI: return I;
-			case Value.LDJ: return J;
-			case Value.LDPCA: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + A);
-			case Value.LDPCB: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + B);
-			case Value.LDPCC: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + C);
-			case Value.LDPCX: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + X);
-			case Value.LDPCY: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + Y);
-			case Value.LDPCZ: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + Z);
-			case Value.LDPCI: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + I);
-			case Value.LDPCJ: return cast(ushort) (memmap.Read16_BE_Aligned(PC++) + J);
-			case Value.POP: return SP++;
-			case Value.PEEK: return SP;
-			case Value.PUSH: return --SP;
-			case Value.SP: return SP;
-			case Value.PC: return PC;
-			case Value.O: return O;
-			case Value.LDNXT: return memmap.Read16_BE_Aligned(PC++);
-			case Value.NXT: return PC++;
+        switch (location) with (Instruction) {
+			case Value.A: return Word(A, &A);
+			case Value.B: return Word(B, &B);
+			case Value.C: return Word(C, &C);
+			case Value.X: return Word(X, &X);
+			case Value.Y: return Word(Y, &Y);
+			case Value.Z: return Word(Z, &Z);
+			case Value.I: return Word(I, &I);
+			case Value.J: return Word(J, &J);
+			case Value.LDA: return Word(memory[A], &memory[A]);
+			case Value.LDB: return Word(memory[B], &memory[B]);
+			case Value.LDC: return Word(memory[C], &memory[C]);
+			case Value.LDX: return Word(memory[X], &memory[X]);
+			case Value.LDY: return Word(memory[Y], &memory[Y]);
+			case Value.LDZ: return Word(memory[Z], &memory[Z]);
+			case Value.LDI: return Word(memory[I], &memory[I]);
+			case Value.LDJ: return Word(memory[J], &memory[J]);
+			case Value.LDPCA: PC++; return Word(memory[memory[PC] + A], &memory[memory[PC] + A]);
+			case Value.LDPCB: PC++; return Word(memory[memory[PC] + B], &memory[memory[PC] + B]);
+			case Value.LDPCC: PC++; return Word(memory[memory[PC] + C], &memory[memory[PC] + C]);
+			case Value.LDPCX: PC++; return Word(memory[memory[PC] + X], &memory[memory[PC] + X]);
+			case Value.LDPCY: PC++; return Word(memory[memory[PC] + Y], &memory[memory[PC] + Y]);
+			case Value.LDPCZ: PC++; return Word(memory[memory[PC] + Z], &memory[memory[PC] + Z]);
+			case Value.LDPCI: PC++; return Word(memory[memory[PC] + I], &memory[memory[PC] + I]);
+			case Value.LDPCJ: PC++; return Word(memory[memory[PC] + J], &memory[memory[PC] + J]);
+			case Value.POP: auto w = Word(memory[SP], &memory[SP]); SP++; return w;
+			case Value.PEEK: return Word(memory[SP], &memory[SP]);
+			case Value.PUSH: --SP; return Word(memory[SP], &memory[SP]);
+			case Value.SP: return Word(SP, &SP);
+			case Value.PC: return Word(PC, &PC);
+			case Value.O: return Word(O, &O);
+			case Value.LDNXT: auto w = Word(memory[memory[PC]], &memory[memory[PC]]); PC++; return w;
+			case Value.NXT: return Word(memory[PC++], null);
 			default:
 				assert(location >= Value.LITERAL);
-				return location - Value.LITERAL;
+				return Word(location - Value.LITERAL, null);
         }
         // Never reached.
     }
+
+    /// Advance the PC past the given instruction.
+    protected final void skip(ref const Instruction i) @safe
+    {
+        if (i.opcode != Instruction.Opcode.NonBasic) {
+            read(i.a);
+            read(i.b);
+        } else {
+            assert(i.nonbasic == Instruction.NonBasicOpcode.JSR);
+            read(i.a);
+            cycleCount += 2 + cycles(i.a);
+        }
+    }
+}
+
+/// A locations value and where to write to if you can write to it.
+struct Word
+{
+    ushort v;
+    ushort* p;
+}
+
+/// Convert word 'op' into an Instruction.
+Instruction decode(ushort op) pure @safe
+{
+    Instruction instruction;
+
+    instruction.opcode = cast(Instruction.Opcode) (op & 0b000000_000000_1111);
+    if (instruction.opcode == Instruction.Opcode.NonBasic) {
+        if (((op & 0b000000_111111_0000) >> 4) != 0x01) {
+            throw new Exception("no support for any non-basic opcode except for JSR.");
+        }
+        instruction.nonbasic = Instruction.NonBasicOpcode.JSR;
+        ushort a = (op & 0b111111_000000_0000) >> 10;
+        instruction.a = cast(Instruction.Value) a;
+        return instruction;
+    } else {
+        ushort a = (op & 0b000000_111111_0000) >> 4;
+        instruction.a = cast(Instruction.Value) a;
+    }
+
+    ushort b = (op & 0b111111_000000_0000) >> 10;
+    instruction.b = cast(Instruction.Value) b;
+
+    return instruction;
 }
 
 immutable int[Instruction.Opcode.max+1] opcycles = [

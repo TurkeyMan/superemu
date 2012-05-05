@@ -14,6 +14,21 @@ import demu.emulator.display;
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;
 
+struct MFInitParams
+{
+	const(char)* pAppTitle;		//*< A title used to represent the application */
+
+	void* hInstance;			//*< The WIN32 hInstance paramater supplied to WinMain() */
+	void* hWnd;					//*< An optional hWnd to a WIN32 window that will contain the viewport */
+
+	const(char)* pCommandLine;	//*< Pointer to the command line string */
+
+	int argc;					//*< The argc parameter supplied to main() */
+	const(char)** argv;			//*< The argv paramater supplied to main() */
+};
+
+extern (C) int MFMain(MFInitParams *pInitParams);
+
 extern (Windows)
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -50,6 +65,9 @@ __gshared HBITMAP bm;
 
 int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+//	MFInitParams init;
+//	MFMain(&init);
+
 	// init the database
 	db = new RomDatabase();
 
@@ -57,8 +75,8 @@ int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int
 	RomInstance* rom = db.FindRom("FantasyZone");
 
 	// create the machine
-//	Machine machine = CreateSystem(rom, db);
-	Machine machine = CreateSystem(rom, db, "Ox10c");
+	Machine machine = CreateSystem(rom, db);
+//	Machine machine = CreateSystem(rom, db, "Ox10c");
 
 	// init the display
 	windowSize = machine.GetDisplay().DisplaySize;
@@ -91,7 +109,7 @@ int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int
 		machine.Draw(frameBuffer);
 
 		// render the image
-		SetBitmapBits(bm, windowSize.numPixels * uint.sizeof, frameBuffer.ptr);
+		SetBitmapBits(bm, windowSize.numPixels * 4, frameBuffer.ptr);
 		InvalidateRect(hWnd, null, false);
 
 		uint endTime = GetTickCount();
