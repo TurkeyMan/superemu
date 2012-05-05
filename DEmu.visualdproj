@@ -437,5 +437,6 @@
    </Folder>
    <File path="src\winmain.d" />
   </Folder>
+  <File path="README.md" />
  </Folder>
 </DProject>

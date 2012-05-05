@@ -1,4 +1,4 @@
-module demu.emulator.systems.Ox10c;
+module demu.emulator.systems.x10c;
 
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;
@@ -10,7 +10,7 @@ import demu.emulator.display;
 import demu.emulator.parts.part;
 import demu.emulator.parts.cpu.dcpu16;
 
-class Ox10c : Machine
+class x10c : Machine
 {
 	this(const(RomInstance)* romDesc, RomDatabase db)
 	{

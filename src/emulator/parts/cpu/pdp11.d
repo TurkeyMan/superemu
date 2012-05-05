@@ -1,4 +1,4 @@
-module demu.emulator.parts.cpu.decpdp11;
+module demu.emulator.parts.cpu.pdp11;
 
 import demu.emulator.machine;
 import demu.emulator.memmap;
