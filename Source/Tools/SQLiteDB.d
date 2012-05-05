@@ -7,7 +7,7 @@ import etc.c.sqlite3;
 import std.traits;
 import std.string;
 
-const(char)[] dString(const(char)* cString)
+const(char)[] dString(in char* cString)
 {
 	return cString[0..core.stdc.string.strlen(cString)];
 }
@@ -142,7 +142,7 @@ class SQLiteDB
 	{
 		assert(db != null, "No database loaded");
 
-		alias int delegate(const(char)*[] values, const(char)*[] columns) QueryResultsDelegate;
+		alias int delegate(in char*[] values, in char*[] columns) QueryResultsDelegate;
 
 		static extern(C) int QueryCallback(void* pUserData, int numColumns, char** ppValues, char** ppColumns)
 		{
@@ -151,7 +151,7 @@ class SQLiteDB
 
 		RowStruct[] results;
 
-		int QueryResults(RowStruct)(const(char)*[] values, const(char)*[] columns)
+		int QueryResults(RowStruct)(in char*[] values, in char*[] columns)
 		{
 			RowStruct row;
 			foreach(i, c; columns)

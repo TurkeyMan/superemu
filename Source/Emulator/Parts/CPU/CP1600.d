@@ -81,33 +81,33 @@ class CP1600 : Processor
 			int address = 0;
 			int operand = 0;
 			int target = 0;
-			switch(am)
+			switch(am) with(AddressModes)
 			{
-				case AddressModes.RegisterImmediate:
+				case RegisterImmediate:
 					target = opcode & 3;
 					if(opcode & 4)
 						operand = 2, cycleCount += 2;
 					else
 						operand = 1;
 					break;
-				case AddressModes.RegisterRegister:
+				case RegisterRegister:
 					operand = registers.r[(opcode >> 3) & 7];
-				case AddressModes.Register:
+				case Register:
 					target = opcode & 7;
 					break;
-				case AddressModes.Direct:
+				case Direct:
 					operand = memmap.Read16_BE_Aligned(registers.r[7]++);
 					address = (opcode & 0x20) ? registers.r[7] - operand - 1 : registers.r[7] + operand;
 					break;
-				case AddressModes.DirectRegister:
+				case DirectRegister:
 					address = memmap.Read16_BE_Aligned(registers.r[7]++);
 					if(instruction != Instruction.MVO)
 						operand = memmap.Read16_BE_Aligned(address);
 					target = opcode & 7;
 					cycleCount += 2;
 					break;
-				case AddressModes.Indirect:
-				case AddressModes.Immediate:
+				case Indirect:
+				case Immediate:
 				{
 					// get the source register
 					int reg = (opcode >> 3) & 7;
@@ -154,7 +154,7 @@ class CP1600 : Processor
 					target = opcode & 7;
 					break;
 				}
-//				case AddressModes.Implied:
+//				case Implied:
 //					break;
 				default:
 					break;
@@ -163,24 +163,24 @@ class CP1600 : Processor
 			// reset Double Byte Data flag
 			registers.swd &= ~SR_DoubleByteData;
 
-			switch(instruction)
+			switch(instruction) with(Instruction)
 			{
-				case Instruction.HLT:
+				case HLT:
 				{
 //					machine.DebugBreak("HLT instruction reached", BR_HaltInstruction);
 					assert(false, "Halt instruction reached!");
 					break;
 				}
-				case Instruction.SDBD:
+				case SDBD:
 					registers.swd |= SR_DoubleByteData;
 					break;
-				case Instruction.EIS:
+				case EIS:
 					registers.swd |= SR_InterruptEnable;
 					break;
-				case Instruction.DIS:
+				case DIS:
 					registers.swd &= ~SR_InterruptEnable;
 					break;
-				case Instruction.J:
+				case J:
 				{
 					// decode target address
 					address = memmap.Read16_BE_Aligned(registers.r[7]++);
@@ -205,29 +205,29 @@ class CP1600 : Processor
 						registers.swd &= ~SR_InterruptEnable;
 					break;
 				}
-				case Instruction.TCI:
+				case TCI:
 					// strobe the TCI output pin of the CPU
 					// Intellivision doesn't appear to connect this pin to anything useful, safe to ignore?
 					break;
-				case Instruction.CLRC:
+				case CLRC:
 					registers.swd &= ~SR_Carry;
 					break;
-				case Instruction.SETC:
+				case SETC:
 					registers.swd |= SR_Carry;
 					break;
-				case Instruction.INCR:
+				case INCR:
 					++registers.r[target];
 					FLAGSZ(registers.r[target]);
 					break;
-				case Instruction.DECR:
+				case DECR:
 					--registers.r[target];
 					FLAGSZ(registers.r[target]);
 					break;
-				case Instruction.COMR:
+				case COMR:
 					registers.r[target] = ~registers.r[target];
 					FLAGSZ(registers.r[target]);
 					break;
-				case Instruction.NEGR:
+				case NEGR:
 				{
 					uint result = (registers.r[target]^0xFFFF) + 1;
 					FLAGSZC(result);
@@ -236,7 +236,7 @@ class CP1600 : Processor
 					registers.r[target] = cast(ushort)result;
 					break;
 				}
-				case Instruction.ADCR:
+				case ADCR:
 				{
 					uint result = registers.r[target];
 					if(registers.swd & SR_Carry)
@@ -247,19 +247,19 @@ class CP1600 : Processor
 					registers.r[target] = cast(ushort)result;
 					break;
 				}
-				case Instruction.GSWD:
+				case GSWD:
 					registers.r[target] = registers.swd & 0xF0F0;
 					break;
-				case Instruction.NOP:
+				case NOP:
 					break;
-				case Instruction.SIN:
+				case SIN:
 					// this instruction has no use on the intellivison as the CPUs' PCIT pin is not connected.
 					// Program Counter Inhibit / Trap
 					break;
-				case Instruction.RSWD:
+				case RSWD:
 					registers.swd = (((registers.r[target] & 0xFF) | (registers.r[target] << 8)) & 0xF0F0) | (registers.swd & 0xF);
 					break;
-				case Instruction.SWAP:
+				case SWAP:
 					if(operand == 1)
 						registers.r[target] = cast(ushort)((registers.r[target] >> 8) | (registers.r[target] << 8));
 					else
@@ -269,11 +269,11 @@ class CP1600 : Processor
 					}
 					FLAGSbZ(registers.r[target]);
 					break;
-				case Instruction.SLL:
+				case SLL:
 					registers.r[target] <<= operand;
 					FLAGSZ(registers.r[target]);
 					break;
-				case Instruction.RLC:
+				case RLC:
 				{
 					int result;
 					if(operand == 1)
@@ -290,7 +290,7 @@ class CP1600 : Processor
 					FLAGSZ(registers.r[target]);
 					break;
 				}
-				case Instruction.SLLC:
+				case SLLC:
 				{
 					int result = registers.r[target] << operand;
 					if(operand == 1)
@@ -301,18 +301,18 @@ class CP1600 : Processor
 					FLAGSZ(registers.r[target]);
 					break;
 				}
-				case Instruction.SLR:
+				case SLR:
 					registers.r[target] >>= operand;
 					FLAGSbZ(registers.r[target]);
 					break;
-				case Instruction.SAR:
+				case SAR:
 					if(operand == 1)
 						registers.r[target] = (registers.r[target] >> 1) | (registers.r[target] & 0x8000);
 					else
 						registers.r[target] = (registers.r[target] >> 2) | (registers.r[target] & 0x8000) | ((registers.r[target] & 0x8000) >> 1);
 					FLAGSbZ(registers.r[target]);
 					break;
-				case Instruction.RRC:
+				case RRC:
 				{
 					int result = registers.r[target];
 					if(operand == 1)
@@ -329,7 +329,7 @@ class CP1600 : Processor
 					FLAGSbZ(registers.r[target]);
 					break;
 				}
-				case Instruction.SARC:
+				case SARC:
 				{
 					int result = registers.r[target];
 					if(operand == 1)
@@ -345,14 +345,14 @@ class CP1600 : Processor
 					FLAGSbZ(registers.r[target]);
 					break;
 				}
-				case Instruction.MOVR:
+				case MOVR:
 					registers.r[target] = cast(ushort)operand;
 					if(target == 6 || target == 7)
 						++cycleCount;
 					FLAGSZ(registers.r[target]);
 					break;
-				case Instruction.ADDR:
-				case Instruction.ADD:
+				case ADDR:
+				case ADD:
 				{
 					uint result = registers.r[target] + cast(ushort)operand;
 					FLAGSZC(result);
@@ -361,8 +361,8 @@ class CP1600 : Processor
 					registers.r[target] = cast(ushort)result;
 					break;
 				}
-				case Instruction.SUBR:
-				case Instruction.SUB:
+				case SUBR:
+				case SUB:
 				{
 //					uint result = registers.r[target] - cast(ushort)operand;
 					uint result = registers.r[target] + cast(ushort)~operand + 1;
@@ -372,8 +372,8 @@ class CP1600 : Processor
 					registers.r[target] = cast(ushort)result;
 					break;
 				}
-				case Instruction.CMPR:
-				case Instruction.CMP:
+				case CMPR:
+				case CMP:
 				{
 //					uint result = registers.r[target] - cast(ushort)operand;
 					uint result = registers.r[target] + cast(ushort)~operand + 1;
@@ -382,128 +382,128 @@ class CP1600 : Processor
 						registers.swd |= SR_Overflow;
 					break;
 				}
-				case Instruction.ANDR:
-				case Instruction.AND:
+				case ANDR:
+				case AND:
 					registers.r[target] &= operand;
 					FLAGSZ(registers.r[target]);
 					break;
-				case Instruction.XORR:
-				case Instruction.XOR:
+				case XORR:
+				case XOR:
 					registers.r[target] ^= operand;
 					FLAGSZ(registers.r[target]);
 					break;
-				case Instruction.B:
+				case B:
 					registers.r[7] = cast(ushort)address;
 					cycleCount += 2;
 					break;
-				case Instruction.BC:
+				case BC:
 					if(registers.swd & SR_Carry)
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BOV:
+				case BOV:
 					if(registers.swd & SR_Overflow)
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BPL:
+				case BPL:
 					if(!(registers.swd & SR_Sign))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BEQ:
+				case BEQ:
 					if(registers.swd & SR_Zero)
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BLT:
+				case BLT:
 					if(((registers.swd & SR_Sign) >> 2) != (registers.swd & SR_Overflow))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BLE:
+				case BLE:
 					if((registers.swd & SR_Zero) || ((registers.swd & SR_Sign) >> 2) != (registers.swd & SR_Overflow))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BUSC:
+				case BUSC:
 					if(((registers.swd & SR_Sign) >> 3) != (registers.swd & SR_Carry))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.NOPP:
+				case NOPP:
 					break;
-				case Instruction.BNC:
+				case BNC:
 					if(!(registers.swd & SR_Carry))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BNOV:
+				case BNOV:
 					if(!(registers.swd & SR_Overflow))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BMI:
+				case BMI:
 					if(registers.swd & SR_Sign)
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BNEQ:
+				case BNEQ:
 					if(!(registers.swd & SR_Zero))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BGE:
+				case BGE:
 					if(((registers.swd & SR_Sign) >> 2) == (registers.swd & SR_Overflow))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BGT:
+				case BGT:
 					if(!(registers.swd & SR_Zero) && ((registers.swd & SR_Sign) >> 2) == (registers.swd & SR_Overflow))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BESC:
+				case BESC:
 					if(((registers.swd & SR_Sign) >> 3) == (registers.swd & SR_Carry))
 					{
 						registers.r[7] = cast(ushort)address;
 						cycleCount += 2;
 					}
 					break;
-				case Instruction.BEXT:
+				case BEXT:
 					// handle this somehow???
 					assert(false, "!");
 					break;
-				case Instruction.MVO:
+				case MVO:
 					memmap.Write16_BE_Aligned(address, registers.r[target]);
 					break;
-				case Instruction.MVI:
+				case MVI:
 					registers.r[target] = cast(ushort)operand;
 					break;
 				default:
@@ -596,9 +596,9 @@ class CP1600 : Processor
 		uint target = 0;
 		uint increment = 0;
 
-		switch(am)
+		switch(am) with(AddressModes)
 		{
-			case AddressModes.Implied:
+			case Implied:
 				// decode special J instruction
 				if(instruction == Instruction.J)
 				{
@@ -614,12 +614,12 @@ class CP1600 : Processor
 					{
 						if(r == 1 && i == 0)
 						{
-							pOpcode.lineTemplate = pAsmTemplate[AddressModes.Direct];
+							pOpcode.lineTemplate = pAsmTemplate[Direct];
 							pOpcode.instructionName = "CALL";
 						}
 						else
 						{
-							pOpcode.lineTemplate = pAsmTemplate[AddressModes.RegisterDirect];
+							pOpcode.lineTemplate = pAsmTemplate[RegisterDirect];
 							pOpcode.instructionName ~= "SR";
 							pOpcode.args[0].type = DisassembledOp.Arg.Type.Register;
 							pOpcode.args[0].value = 4 + r;
@@ -629,7 +629,7 @@ class CP1600 : Processor
 					}
 					else
 					{
-						pOpcode.lineTemplate = pAsmTemplate[AddressModes.Direct];
+						pOpcode.lineTemplate = pAsmTemplate[Direct];
 						pOpcode.flags |= DisassembledOp.Flags.EndOfSequence;
 						pOpcode.flags |= DisassembledOp.Flags.Jump; // should all jumps get this flag? the others are effectively calls...
 					}
@@ -644,7 +644,7 @@ class CP1600 : Processor
 						pOpcode.instructionName ~= "D";
 				}
 				break;
-			case AddressModes.RegisterImmediate:
+			case RegisterImmediate:
 				target = opcode & 3;
 				pOpcode.args[0].type = DisassembledOp.Arg.Type.Register;
 				pOpcode.args[0].value = cast(ubyte)target;
@@ -654,13 +654,13 @@ class CP1600 : Processor
 				pOpcode.args[1].arg.format("%d", pOpcode.args[1].value);
 				pOpcode.numArgs = 2;
 				break;
-			case AddressModes.RegisterRegister:
+			case RegisterRegister:
 				address = (opcode >> 3) & 7;
 				pOpcode.args[pOpcode.numArgs].type = DisassembledOp.Arg.Type.Register;
 				pOpcode.args[pOpcode.numArgs].value = cast(ubyte)address;
 				pOpcode.args[pOpcode.numArgs].arg = regInfo[address].name;
 				++pOpcode.numArgs;
-			case AddressModes.Register:
+			case Register:
 				target = opcode & 7;
 				switch(instruction)
 				{
@@ -668,7 +668,7 @@ class CP1600 : Processor
 						// alias for jump return
 						if(target == 7 && address != 7)
 						{
-							pOpcode.lineTemplate = pAsmTemplate[AddressModes.Register];
+							pOpcode.lineTemplate = pAsmTemplate[Register];
 							pOpcode.instructionName = "JR";
 							pOpcode.flags |= DisassembledOp.Flags.Return;
 							pOpcode.flags |= DisassembledOp.Flags.EndOfSequence;
@@ -678,7 +678,7 @@ class CP1600 : Processor
 						// some more special aliases
 						if(target == address)
 						{
-							pOpcode.lineTemplate = pAsmTemplate[AddressModes.Register];
+							pOpcode.lineTemplate = pAsmTemplate[Register];
 							pOpcode.instructionName = instruction == Instruction.XORR ? "CLRR" : "TSTR";
 							break;
 						}
@@ -689,7 +689,7 @@ class CP1600 : Processor
 						++pOpcode.numArgs;
 				}
 				break;
-			case AddressModes.Direct:
+			case Direct:
 				target = memmap.Read16_BE_Aligned(address++);
 				pOpcode.programCode[pOpcode.pcWords++] = target;
 				address = (opcode & 0x20) ? address - target - 1 : address + target;
@@ -698,15 +698,15 @@ class CP1600 : Processor
 				pOpcode.args[0].arg.format("$%04X", address);
 				pOpcode.numArgs = 1;
 				break;
-			case AddressModes.DirectRegister:
-			case AddressModes.Indirect:
-			case AddressModes.Immediate:
+			case DirectRegister:
+			case Indirect:
+			case Immediate:
 				target = (opcode >> 3) & 7;
 
 				// update the instruction names
-				if(am == AddressModes.Indirect)
+				if(am == Indirect)
 					pOpcode.instructionName ~= "@";
-				else if(am == AddressModes.Immediate)
+				else if(am == Immediate)
 					pOpcode.instructionName ~= "I";
 
 				// if the source is the stack pointer, handle the pre-decrement...
@@ -757,7 +757,7 @@ class CP1600 : Processor
 					address = opcode & 7;
 					if(instruction == Instruction.MVI && address == 7)
 					{
-						pOpcode.lineTemplate = pAsmTemplate[AddressModes.Implied];
+						pOpcode.lineTemplate = pAsmTemplate[Implied];
 						pOpcode.instructionName = "RETURN";
 						pOpcode.flags |= DisassembledOp.Flags.Return;
 						pOpcode.flags |= DisassembledOp.Flags.EndOfSequence;
@@ -766,13 +766,13 @@ class CP1600 : Processor
 					// this alias is fairly standard in code, but it tends to appear in crazy places in the disassembly.
 					else if(instruction == Instruction.MVO && address == 5)
 					{
-						pOpcode.lineTemplate = pAsmTemplate[AddressModes.Implied];
+						pOpcode.lineTemplate = pAsmTemplate[Implied];
 						pOpcode.instructionName = "BEGIN";
 					}
 */
 					else
 					{
-						pOpcode.lineTemplate = pAsmTemplate[AddressModes.Register];
+						pOpcode.lineTemplate = pAsmTemplate[Register];
 						pOpcode.instructionName = instruction == Instruction.MVI ? "PULR" : "PSHR";
 						pOpcode.args[0].type = DisassembledOp.Arg.Type.Register;
 						pOpcode.args[0].value = cast(ubyte)address;

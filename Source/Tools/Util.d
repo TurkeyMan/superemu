@@ -19,14 +19,14 @@ struct StaticArray(size_t count, T = char)
 	{
 		if(data.ptr == buffer.ptr)
 		{
-			len = data.length;
+			len = cast(uint)data.length;
 			return;
 		}
 
 		if(data.length > buffer.length)
 			throw new Exception("Buffer too small!");
 		buffer[0 .. data.length] = data[];
-		len = data.length;
+		len = cast(uint)data.length;
 	}
 
 	void opOpAssign(string op : "~")(in T[] data)
@@ -45,7 +45,7 @@ struct StaticArray(size_t count, T = char)
 	T[] format(A...)(A args)
 	{
 		T[] t = sformat(buffer, args);
-		len = t.length;
+		len = cast(uint)t.length;
 		return t;
 	}
 

@@ -168,7 +168,7 @@ final class MemMap
 
 		if(rom)
 		{
-			MemoryRange range = new MemoryRange(filename, startAddress, startAddress + rom.length, (1 << addressBits) - 1, flags, 8);
+			MemoryRange range = new MemoryRange(filename, startAddress, startAddress + cast(uint)rom.length, (1 << addressBits) - 1, flags, 8);
 			range.romImage = rom;
 
 			RegisterMemRangeDirect(range, rom.ptr);

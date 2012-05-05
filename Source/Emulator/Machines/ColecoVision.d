@@ -26,9 +26,9 @@ class ColecoVision : Machine
 		// init the MemMap
 		memMap = new MemMap(this, 16);
 		memMap.RegisterIOCallbacks(&IORead, &IOWrite);
-		memMap.MountRangeDirect("BIOS", bios.ptr, 0x0000, bios.length, MemFlags.ReadOnly);
+		memMap.MountRangeDirect("BIOS", bios.ptr, 0x0000, cast(uint)bios.length, MemFlags.ReadOnly);
 		memMap.MountRangeDirect("RAM", ram.ptr, 0x6000, 0x2000, MemFlags.ReadWrite, 0x3FF);
-		memMap.MountRangeDirect("ROM", rom.ptr, 0x8000, 0x8000, MemFlags.ReadOnly, maskSize(rom.length));
+		memMap.MountRangeDirect("ROM", rom.ptr, 0x8000, 0x8000, MemFlags.ReadOnly, maskSize(cast(uint)rom.length));
 
 		// init the CPU
 		cpu = new Z80(this, "Z80", memMap);

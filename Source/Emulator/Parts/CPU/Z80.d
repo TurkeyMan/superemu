@@ -313,9 +313,9 @@ class Z80 : Processor
 			}
 
 			// perform the operation
-			switch(op)
+			switch(op) with(Instruction)
 			{
-				case Instruction.ADC:
+				case ADC:
 					result = operandA + operandB + regs.Fc;
 					regs.A = cast(ubyte)result;
 
@@ -326,7 +326,7 @@ class Z80 : Processor
 					regs.Fv = ~(operandA ^ operandB) & (operandA ^ result) & 0x80;
 					regs.Fc = (result >> 8) & 1;
 					break;
-				case Instruction.ADC16:
+				case ADC16:
 					result = operandA + operandB + regs.Fc;
 					regs.HL = cast(ushort)result;
 
@@ -337,7 +337,7 @@ class Z80 : Processor
 					regs.Fv = (~(operandA ^ operandB) & (operandA ^ result) & 0x8000) >> 8;
 					regs.Fc = (result >> 16) & 1;
 					break;
-				case Instruction.ADD:
+				case ADD:
 					result = operandA + operandB;
 					regs.A = cast(ubyte)result;
 
@@ -348,7 +348,7 @@ class Z80 : Processor
 					regs.Fv = ~(operandA ^ operandB) & (operandA ^ result) & 0x80;
 					regs.Fc = (result >> 8) & 1;
 					break;
-				case Instruction.ADD16:
+				case ADD16:
 					result = operandA + operandB;
 					regs.reg16[targetA] = cast(ushort)result;
 
@@ -356,7 +356,7 @@ class Z80 : Processor
 					regs.Fh = 0; // undefined
 					regs.Fc = (result >> 16) & 1;
 					break;
-				case Instruction.AND:
+				case AND:
 					regs.A &= operandA;
 
 					regs.Fs = regs.A & 0x80;
@@ -365,7 +365,7 @@ class Z80 : Processor
 					regs.Fh = 0x10;
 					regs.Fv = parityTable[regs.A];
 					break;
-				case Instruction.BIT:
+				case BIT:
 					result = operandA & (1 << CBImm);
 
 					regs.Fz = !result;
@@ -373,13 +373,13 @@ class Z80 : Processor
 					regs.Fh = 0x10;
 					regs.Fs = regs.Fv = 0; // undefined
 					break;
-				case Instruction.CALL:
+				case CALL:
 					// DebugJumpToSub(PC, operandA, -1);
 					memmap.Write16_LE((regs.SP - 2) & procInfo.addressMask, PC);
 					regs.SP -= 2;
 					PC = operandA;
 					break;
-				case Instruction.CALLC:
+				case CALLC:
 					if(operandA)
 					{
 						// DebugJumpToSub(PC, operandB, -1);
@@ -390,7 +390,7 @@ class Z80 : Processor
 						cycleCount = l_cycleCount;
 					}
 					break;
-				case Instruction.CALLNC:
+				case CALLNC:
 					if(!operandA)
 					{
 						// DebugJumpToSub(PC, operandB, -1);
@@ -401,12 +401,12 @@ class Z80 : Processor
 						cycleCount = l_cycleCount;
 					}
 					break;
-				case Instruction.CCF:
+				case CCF:
 					regs.Fc ^= 1;
 					regs.Fh ^= 0x10;
 					regs.Fn = 0;
 					break;
-				case Instruction.CP:
+				case CP:
 					result = regs.A - operandA;
 
 					regs.Fz = (result & 0xFF) == 0;
@@ -416,7 +416,7 @@ class Z80 : Processor
 					regs.Fh = (regs.A ^ operandA ^ result) & 0x10;
 					regs.Fn = 1;
 					break;
-				case Instruction.CPD:
+				case CPD:
 					operandA = memmap.Read8(regs.HL-- & procInfo.addressMask);
 					--regs.BC;
 
@@ -428,7 +428,7 @@ class Z80 : Processor
 					regs.Fh = (regs.A ^ operandA ^ result) & 0x10;
 					regs.Fn = 1;
 					break;
-				case Instruction.CPDR:
+				case CPDR:
 					operandA = memmap.Read8(regs.HL-- & procInfo.addressMask);
 
 					result = (regs.A - operandA) & 0xFF;
@@ -446,7 +446,7 @@ class Z80 : Processor
 					regs.Fh = (regs.A ^ operandA ^ result) & 0x10;
 					regs.Fn = 1;
 					break;
-				case Instruction.CPI:
+				case CPI:
 					operandA = memmap.Read8(regs.HL++ & procInfo.addressMask);
 					--regs.BC;
 
@@ -458,7 +458,7 @@ class Z80 : Processor
 					regs.Fh = (regs.A ^ operandA ^ result) & 0x10;
 					regs.Fn = 1;
 					break;
-				case Instruction.CPIR:
+				case CPIR:
 					operandA = memmap.Read8(regs.HL++ & procInfo.addressMask);
 
 					result = (regs.A - operandA) & 0xFF;
@@ -476,12 +476,12 @@ class Z80 : Processor
 					regs.Fh = (regs.A ^ operandA ^ result) & 0x10;
 					regs.Fn = 1;
 					break;
-				case Instruction.CPL:
+				case CPL:
 					regs.A = ~regs.A;
 					regs.Fh = 0x10;
 					regs.Fn = 1;
 					break;
-				case Instruction.DAA:
+				case DAA:
 					ubyte addVal=0;
 					ubyte low = regs.A&0xf;
 					ubyte high = (regs.A&0xf0)>>4;
@@ -540,7 +540,7 @@ class Z80 : Processor
 					}
 					regs.A = (regs.A+addVal)&0xFF;
 					break;
-				case Instruction.DEC:
+				case DEC:
 					result = GetReg8PreDec(targetA);
 					result &= 0xFF;
 					regs.Fz = (result == 0);
@@ -549,10 +549,10 @@ class Z80 : Processor
 					regs.Fv = (result == 0x7F);
 					regs.Fn = 1;
 					break;
-				case Instruction.DEC16:
+				case DEC16:
 					--regs.reg16[targetA];
 					break;
-				case Instruction.DECi:
+				case DECi:
 					result = operandA - 1;
 					memmap.Write8(targetA & procInfo.addressMask, cast(ubyte)result);
 					result &= 0xFF;
@@ -562,10 +562,10 @@ class Z80 : Processor
 					regs.Fv = (result == 0x7F);
 					regs.Fn = 1;
 					break;
-				case Instruction.DI:
+				case DI:
 					regs.IE = regs.IE2 = 0;
 					break;
-				case Instruction.DJNZ:
+				case DJNZ:
 					if(--regs.B)
 					{
 						PC = operandA;
@@ -573,28 +573,28 @@ class Z80 : Processor
 						cycleCount = l_cycleCount;
 					}
 					break;
-				case Instruction.EI:
+				case EI:
 					regs.IE = regs.IE2 = 1;
 					bSupressInterrupts = true;
 					break;
-				case Instruction.EX:
+				case EX:
 					result = regs.DE;
 					regs.DE = regs.HL;
 					regs.HL = cast(ushort)result;
 					break;
-				case Instruction.EXaf:
+				case EXaf:
 					BuildFlags();
 					result = regs.AF;
 					regs.AF = regs.AF2;
 					regs.AF2 = cast(ushort)result;
 					UpdateFlags();
 					break;
-				case Instruction.EXsp:
+				case EXsp:
 					result = memmap.Read16_LE(regs.SP & procInfo.addressMask);
 					memmap.Write16_LE(regs.SP & procInfo.addressMask, regs.reg16[targetB]);
 					regs.reg16[targetB] = cast(ushort)result;
 					break;
-				case Instruction.EXX:
+				case EXX:
 					result = regs.BC;
 					regs.BC = regs.BC2;
 					regs.BC2 = cast(ushort)result;
@@ -605,7 +605,7 @@ class Z80 : Processor
 					regs.HL = regs.HL2;
 					regs.HL2 = cast(ushort)result;
 					break;
-				case Instruction.HALT:
+				case HALT:
 					// The HALT instruction suspends CPU operation until a interrupt or reset is received.
 					if(irqLineState == 0)
 						--PC;
@@ -613,11 +613,11 @@ class Z80 : Processor
 					// maybe we shouldn't do this, since this is sort of a valid op...
 					//machine.DebugBreak("HALT instruction reached", HaltInstruction);
 					break;
-				case Instruction.IM:
+				case IM:
 					regs.IM = arg1;
 					break;
 
-				case Instruction.IN:
+				case IN:
 					// TOOD: split this into multiple ops for a bit more speed?
 					if(arg2 == 0)
 						result = memmap.IORead(operandA);
@@ -635,7 +635,7 @@ class Z80 : Processor
 						//regs.Fh = 0; // TODO: ??
 					}
 					break;
-				case Instruction.INC:
+				case INC:
 					result = GetReg8PreInc(targetA) & 0xFF;
 					regs.Fz = (result == 0);
 					regs.Fs = result & 0x80;
@@ -643,10 +643,10 @@ class Z80 : Processor
 					regs.Fv = (result == 0x80);
 					regs.Fn = 0;
 					break;
-				case Instruction.INC16:
+				case INC16:
 					result = ++regs.reg16[targetA];
 					break;
-				case Instruction.INCi:
+				case INCi:
 					result = (operandA + 1) & 0xFF;
 					memmap.Write8(targetA & procInfo.addressMask, cast(ubyte)result);
 
@@ -656,13 +656,13 @@ class Z80 : Processor
 					regs.Fv = (result == 0x80);
 					regs.Fn = 0;
 					break;
-				case Instruction.IND:
+				case IND:
 					memmap.Write8(regs.HL-- & procInfo.addressMask, memmap.IORead(regs.C));
 
 					regs.Fn = 1;
 					regs.Fz = --regs.B == 0;
 					break;
-				case Instruction.INDR:
+				case INDR:
 					memmap.Write8(regs.HL-- & procInfo.addressMask, memmap.IORead(regs.C));
 
 					if(--regs.B)
@@ -674,13 +674,13 @@ class Z80 : Processor
 
 					regs.Fz = regs.Fn = 1;
 					break;
-				case Instruction.INI:
+				case INI:
 					memmap.Write8(regs.HL++ & procInfo.addressMask, memmap.IORead(regs.C));
 
 					regs.Fn = 1;
 					regs.Fz = --regs.B == 0;
 					break;
-				case Instruction.INIR:
+				case INIR:
 					memmap.Write8(regs.HL++ & procInfo.addressMask, memmap.IORead(regs.C));
 
 					if(--regs.B)
@@ -692,15 +692,15 @@ class Z80 : Processor
 
 					regs.Fz = regs.Fn = 1;
 					break;
-				case Instruction.JP:
-				case Instruction.JR:
+				case JP:
+				case JR:
 					PC = operandA;
 					break;
-				case Instruction.JPC:
+				case JPC:
 					if(operandA)
 						PC = operandB;
 					break;
-				case Instruction.JRC:
+				case JRC:
 					if(operandA)
 					{
 						PC = operandB;
@@ -708,11 +708,11 @@ class Z80 : Processor
 						cycleCount = l_cycleCount;
 					}
 					break;
-				case Instruction.JPNC:
+				case JPNC:
 					if(!operandA)
 						PC = operandB;
 					break;
-				case Instruction.JRNC:
+				case JRNC:
 					if(!operandA)
 					{
 						PC = operandB;
@@ -720,31 +720,31 @@ class Z80 : Processor
 						cycleCount = l_cycleCount;
 					}
 					break;
-				case Instruction.LD:
+				case LD:
 					SetReg8(targetA, cast(ubyte)operandB);
 					break;
-				case Instruction.LD16:
+				case LD16:
 					regs.reg16[targetA] = operandB;
 					break;
-				case Instruction.LDi:
+				case LDi:
 					memmap.Write8(targetA & procInfo.addressMask, cast(ubyte)operandB);
 					break;
-				case Instruction.LDi16:
+				case LDi16:
 					memmap.Write16_LE(targetA & procInfo.addressMask, operandB);
 					break;
-				case Instruction.LDir:
+				case LDir:
 					SetReg8(targetA, cast(ubyte)operandB);
 					regs.Fz = operandB == 0;
 					regs.Fs = operandB & 0x80;
 					regs.Fh = regs.Fn = 0;
 					regs.Fv = cast(ubyte)regs.IE;
 					break;
-				case Instruction.LDD:
+				case LDD:
 					memmap.Write8(regs.DE-- & procInfo.addressMask, memmap.Read8(regs.HL-- & procInfo.addressMask));
 					regs.Fv = --regs.BC != 0;
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.LDDR:
+				case LDDR:
 					memmap.Write8(regs.DE-- & procInfo.addressMask, memmap.Read8(regs.HL-- & procInfo.addressMask));
 					if(--regs.BC)
 					{
@@ -755,12 +755,12 @@ class Z80 : Processor
 
 					regs.Fv = regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.LDI:
+				case LDI:
 					memmap.Write8(regs.DE++ & procInfo.addressMask, memmap.Read8(regs.HL++ & procInfo.addressMask));
 					regs.Fv = --regs.BC != 0;
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.LDIR:
+				case LDIR:
 					memmap.Write8(regs.DE++ & procInfo.addressMask, memmap.Read8(regs.HL++ & procInfo.addressMask));
 					if(--regs.BC)
 					{
@@ -771,7 +771,7 @@ class Z80 : Processor
 
 					regs.Fv = regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.NEG:
+				case NEG:
 					regs.Fv = regs.A == 0x80;
 					regs.Fz = regs.Fc = regs.A == 0;
 
@@ -780,10 +780,10 @@ class Z80 : Processor
 					regs.Fs = regs.A & 0x80;
 					regs.Fn = regs.Fh = 1;
 					break;
-				case Instruction.NOP:
+				case NOP:
 					// do nothing...
 					break;
-				case Instruction.OR:
+				case OR:
 					regs.A |= operandA;
 
 					regs.Fs = regs.A & 0x80;
@@ -791,7 +791,7 @@ class Z80 : Processor
 					regs.Fn = regs.Fc = regs.Fh = 0;
 					regs.Fv = parityTable[regs.A];
 					break;
-				case Instruction.OTDR:
+				case OTDR:
 					memmap.IOWrite(regs.C, memmap.Read8(regs.HL-- & procInfo.addressMask));
 					if(--regs.B)
 					{
@@ -802,7 +802,7 @@ class Z80 : Processor
 
 					regs.Fn = regs.Fz = 1;
 					break;
-				case Instruction.OTIR:
+				case OTIR:
 					memmap.IOWrite(regs.C, memmap.Read8(regs.HL++ & procInfo.addressMask));
 					if(--regs.B)
 					{
@@ -813,54 +813,54 @@ class Z80 : Processor
 
 					regs.Fn = regs.Fz = 1;
 					break;
-				case Instruction.OUT:
+				case OUT:
 					if(arg1 & Imm_8)
 						memmap.IOWrite(operandA | (regs.A << 8), cast(ubyte)operandB);
 					else
 						memmap.IOWrite(operandA, cast(ubyte)operandB);
 					break;
-				case Instruction.OUTD:
+				case OUTD:
 					memmap.IOWrite(regs.C, memmap.Read8(regs.HL-- & procInfo.addressMask));
 
 					regs.Fn = 1;
 					regs.Fz = (--regs.B == 0);
 					break;
-				case Instruction.OUTI:
+				case OUTI:
 					memmap.IOWrite(regs.C, memmap.Read8(regs.HL++ & procInfo.addressMask));
 
 					regs.Fn = 1;
 					regs.Fz = (--regs.B == 0);
 					break;
-				case Instruction.POP:
+				case POP:
 					regs.reg16[targetA] = memmap.Read16_LE(regs.SP & procInfo.addressMask);
 					regs.SP += 2;
 
 					if(targetA == RO_AF)
 						UpdateFlags();
 					break;
-				case Instruction.PUSH:
+				case PUSH:
 					if(targetA == RO_AF)
 						BuildFlags();
 
 					regs.SP -= 2;
 					memmap.Write16_LE(regs.SP & procInfo.addressMask, regs.reg16[targetA]);
 					break;
-				case Instruction.RES:
+				case RES:
 					SetReg8(targetA, GetReg8(targetA) & ~(1 << CBImm));
 					break;
-				case Instruction.RESi:
+				case RESi:
 					operandA &= ~(1 << CBImm);
 					memmap.Write8(targetA & procInfo.addressMask, cast(ubyte)operandA);
 
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.RET:
+				case RET:
 					PC = memmap.Read16_LE(regs.SP & procInfo.addressMask);
 					regs.SP += 2;
 					// DebugReturnFromSub(PC);
 					break;
-				case Instruction.RETC:
+				case RETC:
 					if(operandA)
 					{
 						PC = memmap.Read16_LE(regs.SP & procInfo.addressMask);
@@ -870,7 +870,7 @@ class Z80 : Processor
 						cycleCount = l_cycleCount;
 					}
 					break;
-				case Instruction.RETNC:
+				case RETNC:
 					if(!operandA)
 					{
 						PC = memmap.Read16_LE(regs.SP & procInfo.addressMask);
@@ -880,19 +880,19 @@ class Z80 : Processor
 						cycleCount = l_cycleCount;
 					}
 					break;
-				case Instruction.RETI:
+				case RETI:
 					PC = memmap.Read16_LE(regs.SP & procInfo.addressMask);
 					regs.SP += 2;
 					// DebugReturnFromSub(PC);
 					break;
-				case Instruction.RETN:
+				case RETN:
 					regs.IE = regs.IE2;
 
 					PC = memmap.Read16_LE(regs.SP & procInfo.addressMask);
 					regs.SP += 2;
 					// DebugReturnFromSub(PC);
 					break;
-				case Instruction.RL:
+				case RL:
 					result = (operandA << 1) | regs.Fc;
 					regs.Fc = operandA >> 8;
 					result &= 0xFF;
@@ -909,14 +909,14 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)result);
 					break;
-				case Instruction.RLA:
+				case RLA:
 					result = regs.A << 1;
 					regs.A = cast(ubyte)result | regs.Fc;
 					regs.Fc = cast(ubyte)(result >> 8);
 
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.RLC:
+				case RLC:
 					regs.Fc = cast(ubyte)(operandA >> 7);
 					operandA = ((operandA << 1) | regs.Fc) & 0xFF;
 
@@ -932,13 +932,13 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.RLCA:
+				case RLCA:
 					regs.Fc = regs.A >> 7;
 					regs.A = cast(ubyte)((regs.A << 1) | regs.Fc);
 
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.RLD:
+				case RLD:
 					result = memmap.Read8(regs.HL & procInfo.addressMask);
 					memmap.Write8(regs.HL & procInfo.addressMask, cast(ubyte)((regs.A & 0xF) | result << 4));
 					regs.A = cast(ubyte)((regs.A & 0xF0) | (result >> 4));
@@ -948,7 +948,7 @@ class Z80 : Processor
 					regs.Fv = parityTable[regs.A];
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.RR:
+				case RR:
 					operandA |= regs.Fc << 8;
 					regs.Fc = operandA & 1;
 					operandA >>= 1;
@@ -965,14 +965,14 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.RRA:
+				case RRA:
 					result = regs.A | (regs.Fc << 8);
 					regs.Fc = regs.A & 1;
 					regs.A = cast(ubyte)(result >> 1);
 
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.RRC:
+				case RRC:
 					regs.Fc = operandA & 1;
 					operandA = (operandA >> 1) | (regs.Fc << 7);
 
@@ -988,13 +988,13 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.RRCA:
+				case RRCA:
 					regs.Fc = regs.A & 1;
 					regs.A = cast(ubyte)((regs.A >> 1) | (regs.Fc << 7));
 
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.RRD:
+				case RRD:
 					result = memmap.Read8(regs.HL & procInfo.addressMask);
 					memmap.Write8(regs.HL & procInfo.addressMask, cast(ubyte)((regs.A << 4) | result >> 4));
 					regs.A = (regs.A & 0xF0) | (result & 0xF);
@@ -1004,14 +1004,14 @@ class Z80 : Processor
 					regs.Fv = parityTable[regs.A];
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.RST:
+				case RST:
 					regs.SP -= 2;
 					memmap.Write16_LE(regs.SP & procInfo.addressMask, PC);
 
 					PC = arg1 << 3;
 					regs.R = 0;
 					break;
-				case Instruction.SBC:
+				case SBC:
 					result = operandA - operandB - regs.Fc;
 
 					regs.Fz = (result & 0xFF) == 0;
@@ -1023,7 +1023,7 @@ class Z80 : Processor
 
 					regs.A = cast(ubyte)result;
 					break;
-				case Instruction.SBC16:
+				case SBC16:
 					result = operandA - operandB - regs.Fc;
 
 					regs.Fz = (result & 0xFFFF) == 0;
@@ -1035,21 +1035,21 @@ class Z80 : Processor
 
 					regs.HL = cast(ushort)result;
 					break;
-				case Instruction.SCF:
+				case SCF:
 					regs.Fc = 1;
 					regs.Fh = regs.Fn = 0;
 					break;
-				case Instruction.SET:
+				case SET:
 					SetReg8(targetA, GetReg8(targetA) | cast(ubyte)(1 << CBImm));
 					break;
-				case Instruction.SETi:
+				case SETi:
 					operandA |= 1 << CBImm;
 					memmap.Write8(targetA & procInfo.addressMask, cast(ubyte)operandA);
 
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.SLA:
+				case SLA:
 					regs.Fc = cast(ubyte)(operandA >> 7);
 					operandA = (operandA << 1) & 0xFF;
 
@@ -1065,7 +1065,7 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.SLL:
+				case SLL:
 					regs.Fc = cast(ubyte)(operandA >> 7);
 					operandA = ((operandA << 1) | 1) & 0xFF;
 
@@ -1081,7 +1081,7 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.SRA:
+				case SRA:
 					regs.Fc = operandA & 1;
 					operandA = (operandA >> 1) | (operandA & 0x80);
 
@@ -1097,7 +1097,7 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.SRL:
+				case SRL:
 					regs.Fc = operandA & 1;
 					operandA = operandA >> 1;
 
@@ -1113,7 +1113,7 @@ class Z80 : Processor
 					if(targetB)
 						SetReg8(targetB, cast(ubyte)operandA);
 					break;
-				case Instruction.SUB:
+				case SUB:
 					result = regs.A - operandA;
 
 					regs.Fz = (result & 0xFF) == 0;
@@ -1125,7 +1125,7 @@ class Z80 : Processor
 
 					regs.A = cast(ubyte)result;
 					break;
-				case Instruction.XOR:
+				case XOR:
 					regs.A ^= operandA;
 
 					regs.Fs = regs.A & 0x80;
@@ -1134,7 +1134,7 @@ class Z80 : Processor
 					regs.Fv = parityTable[regs.A];
 					break;
 
-				case Instruction.UNK:
+				case UNK:
 //					machine.DebugBreak("Illegal Opcode", BreakReason.IllegalOpcode);
 					assert(false, "Unknown opcode!");
 					break;

@@ -51,7 +51,7 @@ enum Endian
 // handy stuff
 T alignTo(size_t A, T)(T v) pure nothrow
 {
-	return (v + (A-1)) & ~(A-1);
+	return cast(T)((v + (A-1)) & ~(A-1));
 }
 
 T clamp(T)(T least, T val, T most) pure nothrow
@@ -110,7 +110,7 @@ class Machine
 	{
 		assert(!FindPart(part.Name), "Component with the same name already exists!");
 
-		int id = parts.length;
+		int id = cast(int)parts.length;
 		parts ~= part;
 		return id;
 	}
@@ -142,7 +142,7 @@ class Machine
 		timers ~= startTime;
 		timerInterval ~= interval;
 		timerCallbacks ~= callback;
-		return timerCallbacks.length;
+		return cast(uint)timerCallbacks.length;
 	}
 
 	void ResetCountdownTimer(int index, int cycles) nothrow
@@ -345,7 +345,7 @@ private:
 					int counter = timers[a] - cast(int)lastTimer;
 					if(counter <= 0)
 					{
-						if(timerCallbacks[a](a, systemClock + counter))
+						if(timerCallbacks[a](cast(int)a, systemClock + counter))
 							bYield = true;
 						counter += timerInterval[a];
 					}
@@ -365,7 +365,7 @@ private:
 				version(DigitalMars)
 					i = bsr(mask);
 				else version(GNU)
-					i = __builtin_clz(mask);
+					i = __builtin_ctz(mask);
 
 				mask ^= 1 << i;
 

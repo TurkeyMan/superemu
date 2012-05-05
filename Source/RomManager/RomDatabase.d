@@ -106,17 +106,17 @@ private:
 		}
 
 		// find which have been added/removed/touched and update accordingly...
-		int[] added; // index into scan[] of new items
+		size_t[] added; // index into scan[] of new items
 		bool[] exists = new bool[roms.length]; // set for each rom in roms[] that is found
-		int[] touched; // index into scan[] of items that were touched
+		size_t[] touched; // index into scan[] of items that were touched
 
-		int[string] localRomsLookup;
+		size_t[string] localRomsLookup;
 		foreach(i, rom; roms)
 			localRomsLookup[rom.path] = i;
 
 		foreach(i, rom; scan)
 		{
-			int *r;
+			size_t *r;
 			r = (rom.path in localRomsLookup);
 			if(r)
 			{
@@ -145,8 +145,8 @@ private:
 		// remove any that were missing
 		RomInstance[] updated;
 
-		uint[] removed; // key's of removed items
-		int lastMissing = -1;
+		size_t[] removed; // key's of removed items
+		ptrdiff_t lastMissing = -1;
 		foreach(i, b; exists)
 		{
 			if(!b && lastMissing+1 < i)
@@ -168,7 +168,7 @@ private:
 		if(added)
 		{
 			// add new roms to list
-			int firstNew = roms.length;
+			size_t firstNew = roms.length;
 			foreach(i; added)
 				roms ~= scan[i];
 

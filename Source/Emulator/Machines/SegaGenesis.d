@@ -58,7 +58,7 @@ class SegaGenesis : Machine
 		memMap68k = new MemMap(this, 24, true);
 		memMap68k.RegisterMemoryCallbacks(callbacks68k);
 
-		memMap68k.RegisterMemRangeDirect(romRange, pRom.ptr, maskSize(pRom.length));
+		memMap68k.RegisterMemRangeDirect(romRange, pRom.ptr, maskSize(cast(uint)pRom.length));
 		memMap68k.MountRangeCallback("Z80", CallbackID68k.Z80, 0xA00000, 0x10000);
 		memMap68k.MountRangeCallback("Ports", CallbackID68k.PortCallbacks, 0xA10000, 0xF0000);
 		memMap68k.MountRangeCallback("VDP", CallbackID68k.VDPCallbacls, 0xC00000, 0x200000);

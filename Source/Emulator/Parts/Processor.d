@@ -168,7 +168,7 @@ protected:
 				// add the program code?
 				char temp[64];
 				int maxProgramCodeLength = procInfo.maxOpwords * ((procInfo.opcodeWidth + 3) >> 2) + (procInfo.opcodeWidth > 8 ? procInfo.maxOpwords - 1 : 0);
-				int pcBytes = pLine.GetProgramCode(temp, procInfo.opcodeWidth).length;
+				size_t pcBytes = pLine.GetProgramCode(temp, procInfo.opcodeWidth).length;
 				temp[pcBytes++] = ']';
 				line.formatAppend(" [%-*s", maxProgramCodeLength + 1, temp[0..pcBytes]);
 
@@ -176,12 +176,12 @@ protected:
 				line.formatAppend(" %-*s", procInfo.maxAsmLineLength + 2, pLine.GetAsm(temp, false, this));
 
 				// add the registers
-				int regStart = line.length;
-				int numRegs = displayRegs ? displayRegs.length : regInfo.length;
+				size_t regStart = line.length;
+				size_t numRegs = displayRegs ? displayRegs.length : regInfo.length;
 
 				foreach(a; 0..numRegs)
 				{
-					int r = displayRegs ? displayRegs[a] : a;
+					int r = displayRegs ? displayRegs[a] : cast(int)a;
 					if(r >= 0)
 					{
 						line.formatAppend(" %s:", regInfo[r].name);

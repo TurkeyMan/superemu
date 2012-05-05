@@ -74,7 +74,7 @@ class SegaMasterSystem : Machine
 
 		if(revision < Version.SegaMarkIII)
 		{
-			memMap.MountRangeDirect("Rom", rom.ptr, 0x0000, 0x8000, MemFlags.ReadOnly, maskSize(rom.length));
+			memMap.MountRangeDirect("Rom", rom.ptr, 0x0000, 0x8000, MemFlags.ReadOnly, maskSize(cast(uint)rom.length));
 			memMap.MountRangeDirect("Work Ram", cartRam.ptr, 0x8000, 0x4000, MemFlags.ReadWrite);
 			memMap.MountRangeDirect("Ram", ram.ptr, 0xC000, 0x4000, MemFlags.ReadWrite, 0x7FF);
 		}

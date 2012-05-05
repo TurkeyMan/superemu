@@ -70,10 +70,10 @@ enum Archive
 
 Archive IsArchive(string filename)
 {
-	string ext = getExt(filename);
+	string ext = extension(filename);
 	if(ext)
 	{
-		ext = tolower(ext);
+		ext = toLower(ext);
 		switch(ext)
 		{
 			case "zip":
@@ -105,10 +105,10 @@ Archive IsArchive(string filename)
 
 string GuessSystem(string filename)
 {
-	string ext = getExt(filename);
+	string ext = extension(filename);
 	if(ext)
 	{
-		ext = tolower(ext);
+		ext = toLower(ext);
 
 		// run through a big list of known extensions
 		switch(ext)
