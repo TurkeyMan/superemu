@@ -134,7 +134,7 @@ private:
 			RomInstance* update = &scan[i];
 			RomInstance* rom = &roms[localRomsLookup[update.path]];
 
-			int k = rom.key;
+			ulong k = rom.key;
 			*rom = *update;
 			rom.key = k;
 

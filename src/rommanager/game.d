@@ -43,7 +43,7 @@ enum RomFlags
 
 struct RomInstance
 {
-	uint key;
+	ulong key;
 
 	string path;
 	uint size;

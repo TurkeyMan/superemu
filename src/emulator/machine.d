@@ -11,10 +11,9 @@ import demu.emulator.debugger;
 
 import std.algorithm;
 import std.stdio;
-import win32.windows: OutputDebugString;
 
 version(DigitalMars)
-	import std.intrinsic;
+	import core.bitop;
 else version(GNU)
 	import gcc.builtins;
 
@@ -260,7 +259,16 @@ class Machine
 		}
 		else if(target == LogTarget.Console)
 		{
-			OutputDebugString(message.ptr);
+			version(Windows)
+			{
+				import win32.windows: OutputDebugString;
+
+				OutputDebugString(message.ptr);
+			}
+			else
+			{
+				writeln(message);
+			}
 		}
 	}
 

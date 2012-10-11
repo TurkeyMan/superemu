@@ -20,7 +20,7 @@ class SN76489 : SoundPart
 		NCR8496
 	}
 
-	this(Machine machine, string name, Version revision, float clockfreq, bool bSwapbits = false, int samplerate = 48000, float pan = 0.f)
+	this(Machine machine, string name, Version revision, float clockfreq, bool bSwapbits = false, int samplerate = 48000, float pan = 0)
 	{
 		this.revision = revision;
 
@@ -238,7 +238,7 @@ protected:
 		noiseVolume = 0;
 		auxInput = 0;
 		SetSampleRates();
-		prevSample = 0.f;
+		prevSample = 0;
 		noise = noiseW;
 	}
 
