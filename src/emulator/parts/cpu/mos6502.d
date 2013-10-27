@@ -50,7 +50,7 @@ class MOS6502 : Processor
 		stage = 0;
 	}
 
-	uint Reset()
+	override uint Reset()
 	{
 		registers = Registers.init;
 
@@ -76,12 +76,12 @@ class MOS6502 : Processor
 		return super.Reset();
 	}
 
-	void SetProgramCounter(uint pc) nothrow
+	override void SetProgramCounter(uint pc) nothrow
 	{
 		registers.pc = cast(ushort)pc;
 	}
 
-	int Execute(int numCycles, uint breakConditions)
+	override int Execute(int numCycles, uint breakConditions)
 	{
 		bYield = false;
 
@@ -686,7 +686,7 @@ class MOS6502 : Processor
 		return numCycles - remainingCycles;
 	}
 
-	uint GetRegisterValue(int reg)
+	override uint GetRegisterValue(int reg)
 	{
 		switch(reg)
 		{
@@ -701,7 +701,7 @@ class MOS6502 : Processor
 		return -1;
 	}
 
-	void SetRegisterValue(int reg, uint value)
+	override void SetRegisterValue(int reg, uint value)
 	{
 		switch(reg)
 		{
@@ -715,7 +715,7 @@ class MOS6502 : Processor
 		}
 	}
 
-	int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
+	override int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
 	{
 		*pOpcode = DisassembledOp.init;
 		pOpcode.programOffset = address & procInfo.addressMask;

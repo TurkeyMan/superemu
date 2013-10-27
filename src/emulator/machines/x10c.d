@@ -69,13 +69,13 @@ class x10c : Machine
 		//EnableThreadedExecution(true);
 	}
 
-	void Reset()
+	override void Reset()
 	{
 		// reset the cpu
 		cpu.Reset();
 	}
 
-	void Update()
+	override void Update()
 	{
 		// poke the keys into 0x9000-900F + 0x9010
 	}

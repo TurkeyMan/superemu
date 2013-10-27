@@ -19,7 +19,7 @@ class Processor : Part
 		bReady = true;
 	}
 
-	@property const(ProcessorInfo)* ProcInfo() const nothrow { return &procInfo; }
+	override @property const(ProcessorInfo)* ProcInfo() const nothrow { return &procInfo; }
 
 	@property uint AddressMask() const nothrow { return procInfo.addressMask; }
 	@property void AddressMask(uint mask) nothrow { procInfo.addressMask = mask; }

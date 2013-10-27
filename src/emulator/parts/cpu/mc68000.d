@@ -86,7 +86,7 @@ class MC68000 : Processor
 		bUseAutoVectorInterrupts = true;
 	}
 
-	uint Reset()
+	override uint Reset()
 	{
 		// set supervisor mode, and highest interrupt mask
 		regs.sr |= SF_Supervisor;
@@ -100,7 +100,7 @@ class MC68000 : Processor
 		return super.Reset();
 	}
 
-	void SetProgramCounter(uint pc) nothrow
+	override void SetProgramCounter(uint pc) nothrow
 	{
 		regs.pc = pc;
 	}
@@ -122,7 +122,7 @@ class MC68000 : Processor
 		SignalIRQ(state ? (irqLineState | bit) : (irqLineState & ~bit));
 	}
 
-	int Execute(int numCycles, uint breakConditions)
+	override int Execute(int numCycles, uint breakConditions)
 	{
 		bYield = false;
 
@@ -2119,7 +2119,7 @@ class MC68000 : Processor
 		return numCycles - remainingCycles;
 	}
 
-	uint GetRegisterValue(int reg)
+	override uint GetRegisterValue(int reg)
 	{
 		switch(reg)
 		{
@@ -2157,7 +2157,7 @@ class MC68000 : Processor
 	//==============================================================================
 	// Set register
 	//==============================================================================
-	void SetRegisterValue(int reg, uint value)
+	override void SetRegisterValue(int reg, uint value)
 	{
 		switch(reg)
 		{
@@ -2188,7 +2188,7 @@ class MC68000 : Processor
 		}
 	}
 
-	int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
+	override int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
 	{
 		*pOpcode = DisassembledOp.init;
 		pOpcode.programOffset = address & procInfo.addressMask;

@@ -34,7 +34,7 @@ class Z80 : Processor
 		RegisterSymbols(sCodeLabels);
 	}
 
-	uint Reset()
+	override uint Reset()
 	{
 		startAddress = 0x0000; // z80 programs begin at 0x0000
 		regs.PC = cast(ushort)startAddress;
@@ -50,12 +50,12 @@ class Z80 : Processor
 		return super.Reset();
 	}
 
-	void SetProgramCounter(uint pc) nothrow
+	override void SetProgramCounter(uint pc) nothrow
 	{
 		regs.PC = cast(ushort)pc;
 	}
 
-	int Execute(int numCycles, uint breakConditions)
+	override int Execute(int numCycles, uint breakConditions)
 	{
 		bYield = false;
 
@@ -1238,7 +1238,7 @@ class Z80 : Processor
 		return numCycles - remainingCycles;
 	}
 
-	uint GetRegisterValue(int reg)
+	override uint GetRegisterValue(int reg)
 	{
 		switch(reg)
 		{
@@ -1269,7 +1269,7 @@ class Z80 : Processor
 		return -1;
 	}
 
-	void SetRegisterValue(int reg, uint value)
+	override void SetRegisterValue(int reg, uint value)
 	{
 		switch(reg)
 		{
@@ -1303,7 +1303,7 @@ class Z80 : Processor
 
 	static if(EnableDissassembly)
 	{
-		int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
+		override int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
 		{
 			*pOpcode = DisassembledOp.init;
 			pOpcode.programOffset = address & procInfo.addressMask;

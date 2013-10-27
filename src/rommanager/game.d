@@ -43,10 +43,10 @@ enum RomFlags
 
 struct RomInstance
 {
-	ulong key;
+	uint key;
 
 	string path;
-	uint size;
+	size_t size;
 	uint hash;
 	std.datetime.time_t timestamp;
 

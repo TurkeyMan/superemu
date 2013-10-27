@@ -134,7 +134,7 @@ private:
 			RomInstance* update = &scan[i];
 			RomInstance* rom = &roms[localRomsLookup[update.path]];
 
-			ulong k = rom.key;
+			uint k = rom.key;
 			*rom = *update;
 			rom.key = k;
 
@@ -145,7 +145,7 @@ private:
 		// remove any that were missing
 		RomInstance[] updated;
 
-		size_t[] removed; // key's of removed items
+		uint[] removed; // key's of removed items
 		ptrdiff_t lastMissing = -1;
 		foreach(i, b; exists)
 		{

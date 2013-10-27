@@ -116,14 +116,14 @@ class SegaGenesis : Machine
 		//mc68k.SetDefaultLogHandler(Processor::Log_Console);
 	}
 
-	void Reset()
+	override void Reset()
 	{
 		// reset the system
 		mc68k.Reset();
 		z80.SetReady(false);
 	}
 
-	void Update()
+	override void Update()
 	{
 		inputPort0 = 0xFF;
 		inputPort1 = 0xFF;

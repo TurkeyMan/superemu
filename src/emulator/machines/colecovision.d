@@ -54,13 +54,13 @@ class ColecoVision : Machine
 		//EnableThreadedExecution(true);
 	}
 
-	void Reset()
+	override void Reset()
 	{
 		// reset the cpu
 		cpu.Reset();
 	}
 
-	void Update()
+	override void Update()
 	{
 	}
 

@@ -111,7 +111,7 @@ struct DisassembledOp
 			Condition
 		}
 
-		enum int MaxLength = 32-5;
+		enum MaxLength = 32-5;
 		StaticString!MaxLength arg;
 		ubyte type;
 		uint value;

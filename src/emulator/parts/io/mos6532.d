@@ -155,12 +155,12 @@ class MOS6532 : Part
 		ram[address & 0x7F] = value;
 	}
 
-	uint GetRegisterValue(int reg)
+	override uint GetRegisterValue(int reg)
 	{
 		return Read(reg);
 	}
 
-	void SetRegisterValue(int reg, uint value)
+	override void SetRegisterValue(int reg, uint value)
 	{
 		switch(reg)
 		{

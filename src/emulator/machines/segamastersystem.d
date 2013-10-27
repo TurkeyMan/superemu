@@ -127,13 +127,13 @@ class SegaMasterSystem : Machine
 //		EnableThreadedExecution(true);
 	}
 
-	void Reset()
+	override void Reset()
 	{
 		// reset the cpu
 		cpu.Reset();
 	}
 
-	void Update()
+	override void Update()
 	{
 		inputPort0 = 0xFF;
 		inputPort1 = 0xFF;

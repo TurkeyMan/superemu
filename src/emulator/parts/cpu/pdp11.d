@@ -34,7 +34,7 @@ class DEC_PDP11 : Processor
 		regInfo = sRegInfo;
 	}
 
-	uint Reset()
+	override uint Reset()
 	{
 		registers = Registers.init;
 
@@ -45,12 +45,12 @@ class DEC_PDP11 : Processor
 		return super.Reset();
 	}
 
-	void SetProgramCounter(uint pc) nothrow
+	override void SetProgramCounter(uint pc) nothrow
 	{
 		registers.r[7] = cast(ushort)pc;
 	}
 
-	int Execute(int numCycles, uint breakConditions)
+	override int Execute(int numCycles, uint breakConditions)
 	{
 		int remainingCycles = numCycles;
 		while(remainingCycles > 0)
@@ -142,7 +142,7 @@ class DEC_PDP11 : Processor
 		return numCycles - remainingCycles;
 	}
 
-	uint GetRegisterValue(int reg)
+	override uint GetRegisterValue(int reg)
 	{
 		if(reg < 8)
 			return registers.r[reg];
@@ -151,7 +151,7 @@ class DEC_PDP11 : Processor
 		return -1;
 	}
 
-	void SetRegisterValue(int reg, uint value)
+	override void SetRegisterValue(int reg, uint value)
 	{
 		if(reg < 8)
 			registers.r[reg] = cast(ushort)value;
@@ -159,7 +159,7 @@ class DEC_PDP11 : Processor
 			registers.swd = cast(ushort)value;
 	}
 
-	int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
+	override int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
 	{
 		*pOpcode = DisassembledOp.init;
 		pOpcode.programOffset = address & procInfo.addressMask;

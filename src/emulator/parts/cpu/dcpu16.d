@@ -27,7 +27,7 @@ class DCPU_16 : Processor
 		regInfo = sRegInfo;
 	}
 
-	uint Reset()
+	override uint Reset()
 	{
 //		registers = Registers.init;
 		startAddress = PC;
@@ -35,12 +35,12 @@ class DCPU_16 : Processor
 		return super.Reset();
 	}
 
-	void SetProgramCounter(uint pc) nothrow
+	override void SetProgramCounter(uint pc) nothrow
 	{
 		PC = cast(ushort)pc;
 	}
 
-	int Execute(int numCycles, uint breakConditions)
+	override int Execute(int numCycles, uint breakConditions)
 	{
 		int remainingCycles = numCycles;
 		while(remainingCycles > 0)
@@ -178,20 +178,20 @@ class DCPU_16 : Processor
 		return numCycles - remainingCycles;
 	}
 
-	uint GetRegisterValue(int reg)
+	override uint GetRegisterValue(int reg)
 	{
 		if(reg < 11)
 			return r[reg];
 		return -1;
 	}
 
-	void SetRegisterValue(int reg, uint value)
+	override void SetRegisterValue(int reg, uint value)
 	{
 		if(reg < 11)
 			r[reg] = cast(ushort)value;
 	}
 
-	int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
+	override int DisassembleOpcode(uint address, DisassembledOp* pOpcode)
 	{
 		*pOpcode = DisassembledOp.init;
 		pOpcode.programOffset = address & procInfo.addressMask;

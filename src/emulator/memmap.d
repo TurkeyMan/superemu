@@ -26,7 +26,7 @@ enum MemFlags
 	ReadWrite = Read | Write,
 }
 
-private struct MemoryCallbacks
+struct MemoryCallbacks
 {
 	Read8Handler read8;
 	Write8Handler write8;
@@ -36,7 +36,7 @@ private struct MemoryCallbacks
 	Write32Handler write32;
 }
 
-private final class MemoryRange
+final class MemoryRange
 {
 	this(string name, uint start, uint end, uint mask, uint flags, int byteWidth = 8, int numBanks = 1)
 	{

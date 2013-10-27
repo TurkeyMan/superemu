@@ -215,7 +215,7 @@ class I8255 : Part
 		}
 	}
 
-	uint GetRegisterValue(int reg)
+	override uint GetRegisterValue(int reg)
 	{
 		switch(reg)
 		{
@@ -232,7 +232,7 @@ class I8255 : Part
 		}
 	}
 
-	void SetRegisterValue(int reg, uint value)
+	override void SetRegisterValue(int reg, uint value)
 	{
 		switch(reg)
 		{

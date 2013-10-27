@@ -23,6 +23,7 @@
   <isSolaris>0</isSolaris>
   <scheduler>0</scheduler>
   <useDeprecated>0</useDeprecated>
+  <errDeprecated>0</errDeprecated>
   <useAssert>0</useAssert>
   <useInvariants>0</useInvariants>
   <useIn>0</useIn>
@@ -46,7 +47,7 @@
   <compiler>0</compiler>
   <otherDMD>0</otherDMD>
   <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
-  <imppath>$(DMDInstallDir)src\libs</imppath>
+  <imppath>$(DMDInstallDir)src\libs ../Fuji/dist/include/d2</imppath>
   <fileImppath />
   <outdir>$(ConfigurationName)</outdir>
   <objdir>$(OutDir)</objdir>
@@ -76,6 +77,10 @@
   <runargs />
   <runCv2pdb>1</runCv2pdb>
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
+  <cv2pdbPre2043>0</cv2pdbPre2043>
+  <cv2pdbNoDemangle>0</cv2pdbNoDemangle>
+  <cv2pdbEnumType>0</cv2pdbEnumType>
+  <cv2pdbOptions />
   <objfiles />
   <linkswitches />
   <libfiles>sqlite.lib gdi32.lib ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
@@ -83,17 +88,10 @@
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
+  <useStdLibPath>1</useStdLibPath>
   <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
-  <debugtarget>$(TARGETPATH)</debugtarget>
-  <debugarguments />
-  <debugworkingdir />
-  <debugattach>0</debugattach>
-  <debugremote />
-  <debugEngine>1</debugEngine>
-  <debugStdOutToOutputWindow>0</debugStdOutToOutputWindow>
-  <pauseAfterRunning>0</pauseAfterRunning>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Config name="Release" platform="Win32">
@@ -119,6 +117,7 @@
   <isSolaris>0</isSolaris>
   <scheduler>0</scheduler>
   <useDeprecated>0</useDeprecated>
+  <errDeprecated>0</errDeprecated>
   <useAssert>0</useAssert>
   <useInvariants>0</useInvariants>
   <useIn>0</useIn>
@@ -172,6 +171,10 @@
   <runargs />
   <runCv2pdb>1</runCv2pdb>
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
+  <cv2pdbPre2043>0</cv2pdbPre2043>
+  <cv2pdbNoDemangle>0</cv2pdbNoDemangle>
+  <cv2pdbEnumType>0</cv2pdbEnumType>
+  <cv2pdbOptions />
   <objfiles />
   <linkswitches />
   <libfiles>-lsqlite3 -lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
@@ -179,17 +182,10 @@
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
+  <useStdLibPath>1</useStdLibPath>
   <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
-  <debugtarget>$(TARGETPATH)</debugtarget>
-  <debugarguments />
-  <debugworkingdir />
-  <debugattach>0</debugattach>
-  <debugremote />
-  <debugEngine>1</debugEngine>
-  <debugStdOutToOutputWindow>0</debugStdOutToOutputWindow>
-  <pauseAfterRunning>0</pauseAfterRunning>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Config name="Debug" platform="x64">
@@ -215,6 +211,7 @@
   <isSolaris>0</isSolaris>
   <scheduler>0</scheduler>
   <useDeprecated>0</useDeprecated>
+  <errDeprecated>0</errDeprecated>
   <useAssert>0</useAssert>
   <useInvariants>0</useInvariants>
   <useIn>0</useIn>
@@ -235,7 +232,7 @@
   <nofloat>0</nofloat>
   <Dversion>2</Dversion>
   <ignoreUnsupportedPragmas>0</ignoreUnsupportedPragmas>
-  <compiler>1</compiler>
+  <compiler>0</compiler>
   <otherDMD>0</otherDMD>
   <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
   <imppath />
@@ -268,24 +265,21 @@
   <runargs />
   <runCv2pdb>1</runCv2pdb>
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
-  <objfiles>sqlite3.o</objfiles>
+  <cv2pdbPre2043>0</cv2pdbPre2043>
+  <cv2pdbNoDemangle>0</cv2pdbNoDemangle>
+  <cv2pdbEnumType>0</cv2pdbEnumType>
+  <cv2pdbOptions />
+  <objfiles>sqlite3.obj</objfiles>
   <linkswitches />
-  <libfiles>-lsqlite3 -lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
+  <libfiles>sqlite3.lib gdi32.lib ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
   <libpaths />
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
+  <useStdLibPath>1</useStdLibPath>
   <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
-  <debugtarget>$(TARGETPATH)</debugtarget>
-  <debugarguments />
-  <debugworkingdir />
-  <debugattach>0</debugattach>
-  <debugremote />
-  <debugEngine>0</debugEngine>
-  <debugStdOutToOutputWindow>1</debugStdOutToOutputWindow>
-  <pauseAfterRunning>0</pauseAfterRunning>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Config name="Release" platform="x64">
@@ -311,6 +305,7 @@
   <isSolaris>0</isSolaris>
   <scheduler>0</scheduler>
   <useDeprecated>0</useDeprecated>
+  <errDeprecated>0</errDeprecated>
   <useAssert>0</useAssert>
   <useInvariants>0</useInvariants>
   <useIn>0</useIn>
@@ -331,7 +326,7 @@
   <nofloat>0</nofloat>
   <Dversion>2</Dversion>
   <ignoreUnsupportedPragmas>0</ignoreUnsupportedPragmas>
-  <compiler>1</compiler>
+  <compiler>0</compiler>
   <otherDMD>0</otherDMD>
   <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
   <imppath />
@@ -364,6 +359,10 @@
   <runargs />
   <runCv2pdb>1</runCv2pdb>
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
+  <cv2pdbPre2043>0</cv2pdbPre2043>
+  <cv2pdbNoDemangle>0</cv2pdbNoDemangle>
+  <cv2pdbEnumType>0</cv2pdbEnumType>
+  <cv2pdbOptions />
   <objfiles>sqlite3.o</objfiles>
   <linkswitches />
   <libfiles>-lgdi32 -lole32 -lkernel32 -luser32 -lcomctl32 -lcomdlg32</libfiles>
@@ -371,17 +370,10 @@
   <deffile />
   <resfile />
   <exefile>$(OutDir)\$(ProjectName).exe</exefile>
+  <useStdLibPath>1</useStdLibPath>
   <additionalOptions />
   <preBuildCommand />
   <postBuildCommand />
-  <debugtarget>$(TARGETPATH)</debugtarget>
-  <debugarguments />
-  <debugworkingdir />
-  <debugattach>0</debugattach>
-  <debugremote />
-  <debugEngine>1</debugEngine>
-  <debugStdOutToOutputWindow>0</debugStdOutToOutputWindow>
-  <pauseAfterRunning>0</pauseAfterRunning>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Folder name="DEmu">
@@ -403,10 +395,10 @@
       <File path="src\emulator\parts\io\i8255.d" />
       <File path="src\emulator\parts\io\mos6532.d" />
      </Folder>
+     <Folder name="protection" />
      <Folder name="sound">
       <File path="src\emulator\parts\sound\sn76489.d" />
      </Folder>
-     <Folder name="protection" />
      <File path="src\emulator\parts\part.d" />
      <File path="src\emulator\parts\processor.d" />
      <File path="src\emulator\parts\soundpart.d" />

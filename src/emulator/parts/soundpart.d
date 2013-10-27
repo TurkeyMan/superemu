@@ -74,7 +74,7 @@ class SoundPart : Processor
 			GenerateSamples(remaining);
 	}
 
-	int Execute(int numCycles, uint breakConditions)
+	override int Execute(int numCycles, uint breakConditions)
 	{
 		int cc = 0;
 		int numSamples = 0;

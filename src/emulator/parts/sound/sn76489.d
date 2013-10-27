@@ -39,7 +39,7 @@ class SN76489 : SoundPart
 		super(machine, name, clockfreq, 1, pan, samplerate, 0);
 	}
 
-	uint Reset()
+	override uint Reset()
 	{
 		Init();
 		return super.Reset();
@@ -140,7 +140,7 @@ class SN76489 : SoundPart
 		}
 	}
 
-	void GenerateSamples(int numSamples)
+	override void GenerateSamples(int numSamples)
 	{
 		LockBuffer();
 
