@@ -90,8 +90,6 @@ class MOS6532 : Part
 					return 0x80;
 			}
 		}
-
-		return 0;
 	}
 
 	void Write(uint address, ubyte value)

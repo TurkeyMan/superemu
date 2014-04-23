@@ -1,6 +1,6 @@
 module demu.emulator.memmap;
 
-import core.stdc.stdio;
+import std.string;
 import demu.emulator.machine;
 
 alias ubyte delegate(uint address)				Read8Handler;
@@ -503,16 +503,14 @@ final class MemMap
 			static if(EnableMemTracking)
 			{
 				Block* block = &memory[address >> 8];
-				printf("Illegal Read from 0x%08X in block '%s'!", address, block.range ? block.range.name : "");
+				format("Illegal Read from 0x%08X in block '%s'!", address, block.range ? block.range.name : "");
 			}
 			else
 			{
-				printf("Illegal Read");
+				format("Illegal Read");
 			}
-/*
-#if !defined(_RETAIL)
-			machine.FlushLog();
-#endif
+/+
+			debug machine.FlushLog();
 
 			Debugger dbg = machine.Debugger;
 			if(dbg && dbg.IsClientConnected)
@@ -523,7 +521,7 @@ final class MemMap
 			{
 				assert(false, buff);
 			}
-*/
++/
 		}
 
 		return 0xFFFFFFFF;
@@ -544,16 +542,14 @@ final class MemMap
 			static if(EnableMemTracking)
 			{
 				Block* block = &memory[address >> 8];
-				printf("Illegal Write to 0x%08X in block '%s'!", address, block.range ? block.range.name : "");
+				format("Illegal Write to 0x%08X in block '%s'!", address, block.range ? block.range.name : "");
 			}
 			else
 			{
-				printf("Illegal Write");
+				format("Illegal Write");
 			}
-/*
-#if !defined(_RETAIL)
-			machine.FlushLog();
-#endif
+/+
+			debug machine.FlushLog();
 
 			Debugger dbg = machine.Debugger;
 			if(dbg && dbg.IsClientConnected)
@@ -564,7 +560,7 @@ final class MemMap
 			{
 				assert(false, buff);
 			}
-*/
++/
 		}
 	}
 

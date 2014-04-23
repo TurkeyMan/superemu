@@ -155,7 +155,7 @@ private:
 //	static int GetSamplesResample(int numChannels, float* pSamples, int numRequested, void* pUserData);
 //	static int GetSamplesResampleMono(int numChannels, float* pSamples, int numRequested, void* pUserData);
 
-//	SEWaveUnit* pPSGStream;
+//	WaveUnit* pPSGStream;
 	Mutex mutex;
 	ushort resampleCounter;
 

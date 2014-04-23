@@ -162,7 +162,7 @@ class Machine
 			if(saveStateSize == -1 || m_streamBreakpointSize != -1)
 				saveStateSize = GetSaveSize();
 
-			MKASSERT(pStateData->saveBufferSize <= saveStateSize, "Save buffer is too small!");
+			assert(pStateData->saveBufferSize <= saveStateSize, "Save buffer is too small!");
 
 			// dump the emulator state
 			SaveStateToBuffer(pStateData->pSaveStateBuffer);
@@ -174,11 +174,8 @@ class Machine
 			pStateData->bLoadSucceeded = LoadStateFromBuffer(pStateData->pLoadStateBuffer);
 
 		// restore NVRAM if it was requested
-		if(version == 0x103)
-		{
-			if(pStateData->pNVRAMRestoreData)
-				RestoreNVRam((uint8*)pStateData->pNVRAMRestoreData, pStateData->nvramSize);
-		}
+		if(pStateData->pNVRAMRestoreData)
+			RestoreNVRam((uint8*)pStateData->pNVRAMRestoreData, pStateData->nvramSize);
 +/
 		// swap display buffers
 		display.SwapBuffers();
@@ -229,7 +226,7 @@ class Machine
 			char filename[256];
 			const char* pMachineName = m_pMachineDescription->GetName();
 			sprintf_s(filename, 256, "//home/%s_%06d.txt", pMachineName, logInstance);
-			pLogFile = FileOpen(filename, static_cast<SEOpenMode>(SE_WriteTruncate | SE_CreateDirectory));
+			pLogFile = FileOpen(filename, static_cast<OpenMode>(WriteTruncate | CreateDirectory));
 		}
 
 		return logRefCount;
@@ -259,9 +256,9 @@ class Machine
 		}
 		else if(target == LogTarget.Console)
 		{
-			version(Windows)
+			version(x)//Windows)
 			{
-				import win32.windows: OutputDebugString;
+//				import win32.windows: OutputDebugString;
 
 				OutputDebugString(message.ptr);
 			}

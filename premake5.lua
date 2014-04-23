@@ -1,7 +1,9 @@
-solution "SuperEmu"
+require "monodevelop"
+require "d"
+
+solution "DEmu"
 	configurations { "Debug", "Release", "UnitTest" }
---	platforms { "Native", "x32", "x64" }
-	platforms { "Native" }
+	platforms { "x32", "x64" }
 
 	-- include the fuji project...
 --	fujiDll = true
@@ -10,23 +12,25 @@ solution "SuperEmu"
 	-- include the Haku project...
 --	dofile "../Fuji/Haku/Project/hakuproj.lua"
 
-	project "SuperEmu"
+	project "DEmu"
 		kind "WindowedApp"
 		language "D"
-		files { "src/**.d" }
+		files { "**.d", "**.md" }
 
 		objdir "obj/"
 		targetdir "bin/"
 --		debugdir "../"
 
 		configuration "Debug"
+			optimize "Off"
 			flags { "Symbols" }
 
 		configuration "Release"
-			flags { "OptimizeSpeed" }
+			optimize "Speed"
 
 		configuration "UnitTest"
-			flags { "UnitTest", "OptimizeSpeed" }
+			optimize "Speed"
+			flags { "UnitTest" }
 
 		configuration {}
 

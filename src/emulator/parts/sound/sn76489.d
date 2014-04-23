@@ -266,7 +266,7 @@ protected:
 	off   0
 */
 	// conversion table for dB attenuation, to final voltage (as a 24:8 fixed point)
-	immutable int[16] DBtoVolume =
+	__gshared immutable int[16] DBtoVolume =
 	[
 		256,202,161,128,    // 0, 2, 4, 6
 		102,82, 64, 51,     // 8, 10,12,14

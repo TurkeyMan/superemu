@@ -215,7 +215,6 @@ class Z80 : Processor
 						default:
 							// not defined!
 							assert(false, "Shouldn't be here!");
-							break;
 					}
 				}
 				else
@@ -280,7 +279,6 @@ class Z80 : Processor
 						default:
 							// not defined!
 							assert(false, "Shouldn't be here!");
-							break;
 					}
 				}
 				else
@@ -1137,11 +1135,9 @@ class Z80 : Processor
 				case UNK:
 //					machine.DebugBreak("Illegal Opcode", BreakReason.IllegalOpcode);
 					assert(false, "Unknown opcode!");
-					break;
 				default:
 					// invalid opcode!
 					assert(false, "Bad opcode?");
-					break;
 			}
 
 			static if(EnableDissassembly)
@@ -1220,7 +1216,6 @@ class Z80 : Processor
 							break;
 						default:
 							assert(false, "Invalid interrupt mode!");
-							break;
 					}
 				}
 			}
@@ -1487,6 +1482,7 @@ class Z80 : Processor
 				// return ops may have a condition
 				case Instruction.RETNC:
 					arg1 += 6;
+					goto case;
 				case Instruction.RETC:
 					pOpcode.args[0].type = DisassembledOp.Arg.Type.Condition;
 					pOpcode.args[0].arg = g8BitRegs[arg1];
@@ -1498,6 +1494,7 @@ class Z80 : Processor
 				case Instruction.JPNC:
 				case Instruction.JRNC:
 					arg1 += 6;
+					goto case;
 				case Instruction.JPC:
 				case Instruction.JRC:
 					pOpcode.args[1].type = DisassembledOp.Arg.Type.JumpTarget;
@@ -1515,6 +1512,7 @@ class Z80 : Processor
 					// branches may have conditions
 				case Instruction.CALLNC:
 					arg1 += 6;
+					goto case;
 				case Instruction.CALLC:
 					pOpcode.args[1].type = DisassembledOp.Arg.Type.JumpTarget;
 					pOpcode.args[0].type = DisassembledOp.Arg.Type.Condition;
@@ -1533,6 +1531,7 @@ class Z80 : Processor
 					// absolute jumps end functions
 				case Instruction.JP:
 					pOpcode.args[0].type = DisassembledOp.Arg.Type.JumpTarget;
+					goto case;
 				case Instruction.JR:
 					pOpcode.flags |= DisassembledOp.Flags.EndOfSequence;
 					pOpcode.flags |= DisassembledOp.Flags.Jump;
@@ -1707,7 +1706,6 @@ protected:
 					default:
 						// not defined!
 						assert(false, "Shouldn't be here!");
-						break;
 				}
 			}
 			else

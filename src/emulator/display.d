@@ -219,7 +219,7 @@ class Display
 			switch(rotation)
 			{
 				case SR_None:
-					SEMemCopy(pFrameBuffer, pFrontBuffer, frameBufferSize.width * frameBufferSize.height * sizeof(uint));
+					MemCopy(pFrameBuffer, pFrontBuffer, frameBufferSize.width * frameBufferSize.height * sizeof(uint));
 					break;
 
 				case SR_90CW:

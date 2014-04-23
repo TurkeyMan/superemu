@@ -26,9 +26,9 @@ struct MFInitParams
 
 extern (C) int MFMain(MFInitParams *pInitParams);
 
-version(Windows)
+version(x)//Windows)
 {
-	//import std.c.windows.windows;
+//	import std.c.windows.windows;
 	import win32.windows;
 	import win32.wingdi;
 

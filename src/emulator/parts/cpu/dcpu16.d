@@ -281,7 +281,7 @@ private:
 			case Value.NXT: return Word(memory[PC++], null);
 			default:
 				assert(location >= Value.LITERAL);
-				return Word(location - Value.LITERAL, null);
+				return Word(cast(ushort)(location - Value.LITERAL), null);
         }
         // Never reached.
     }

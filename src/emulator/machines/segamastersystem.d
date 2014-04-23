@@ -234,7 +234,6 @@ protected:
 				case 3:
 					// 3d glasses control
 					assert(false, "3D glasses not supported");
-					break;
 				case 4:
 					page[0] = value;
 					if(value & 0x8)

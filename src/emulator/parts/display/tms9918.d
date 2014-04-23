@@ -250,7 +250,6 @@ class TMS9918 : Part
 				break;
 			default:
 				assert(false, "Unknown display mode!!");
-				break;
 		}
 
 		++scanLine;

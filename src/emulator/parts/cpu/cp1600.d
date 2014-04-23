@@ -92,6 +92,7 @@ class CP1600 : Processor
 					break;
 				case RegisterRegister:
 					operand = registers.r[(opcode >> 3) & 7];
+					goto case;
 				case Register:
 					target = opcode & 7;
 					break;
@@ -169,7 +170,6 @@ class CP1600 : Processor
 				{
 //					machine.DebugBreak("HLT instruction reached", BR_HaltInstruction);
 					assert(false, "Halt instruction reached!");
-					break;
 				}
 				case SDBD:
 					registers.swd |= SR_DoubleByteData;
@@ -499,7 +499,6 @@ class CP1600 : Processor
 				case BEXT:
 					// handle this somehow???
 					assert(false, "!");
-					break;
 				case MVO:
 					memmap.Write16_BE_Aligned(address, registers.r[target]);
 					break;
@@ -510,7 +509,6 @@ class CP1600 : Processor
 				{
 //					machine.DebugBreak("Illegal opcode", BR_IllegalOpcode);
 					assert(false, "Unknown opcode!");
-					break;
 				}
 			}
 
@@ -660,11 +658,12 @@ class CP1600 : Processor
 				pOpcode.args[pOpcode.numArgs].value = cast(ubyte)address;
 				pOpcode.args[pOpcode.numArgs].arg = regInfo[address].name;
 				++pOpcode.numArgs;
+				goto case;
 			case Register:
 				target = opcode & 7;
-				switch(instruction)
+				switch(instruction) with(Instruction)
 				{
-					case Instruction.MOVR:
+					case MOVR:
 						// alias for jump return
 						if(target == 7 && address != 7)
 						{
@@ -674,14 +673,16 @@ class CP1600 : Processor
 							pOpcode.flags |= DisassembledOp.Flags.EndOfSequence;
 							break;
 						}
-					case Instruction.XORR:
+						goto case;
+					case XORR:
 						// some more special aliases
 						if(target == address)
 						{
 							pOpcode.lineTemplate = pAsmTemplate[Register];
-							pOpcode.instructionName = instruction == Instruction.XORR ? "CLRR" : "TSTR";
+							pOpcode.instructionName = instruction == XORR ? "CLRR" : "TSTR";
 							break;
 						}
+						goto default;
 					default:
 						pOpcode.args[pOpcode.numArgs].type = DisassembledOp.Arg.Type.Register;
 						pOpcode.args[pOpcode.numArgs].value = cast(ubyte)target;

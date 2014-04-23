@@ -290,7 +290,6 @@ class MC68000 : Processor
 									break;
 								default:
 									assert(false, "Illegal!");
-									break;
 							}
 						}
 						break;
@@ -401,7 +400,6 @@ class MC68000 : Processor
 									break;
 								default:
 									assert(false, "Illegal!");
-									break;
 							}
 						}
 						break;
@@ -849,7 +847,6 @@ class MC68000 : Processor
 						break;
 					case Instruction.MC68000_CHK:
 						assert(false, "WRITE ME!");
-						break;
 					case Instruction.MC68000_CLRB:
 						regs.sr = (regs.sr & 0xFFF0) | SF_Zero;
 						if(op.am0 >= AddressingMode.Ind)
@@ -895,6 +892,7 @@ class MC68000 : Processor
 							operand0 = cast(uint)cast(int)cast(short)cast(ushort)operand0;
 							operand1 = cast(uint)cast(int)cast(short)cast(ushort)operand1;
 						}
+						goto case;
 					case Instruction.MC68000_CMPM:
 						regs.sr &= 0xFFF0;
 
@@ -2035,7 +2033,6 @@ class MC68000 : Processor
 						break;
 					case Instruction.MC68000_TAS:
 						assert(false, "WRITE ME!");
-						break;
 					case Instruction.MC68000_TRAP:
 						// raise a user exception
 						RaiseException(ExceptionTable.TRAP0Vector + op.d0);
@@ -2043,7 +2040,6 @@ class MC68000 : Processor
 					case Instruction.MC68000_TRAPcc:
 						// 68020+ instruction...
 						assert(false, "WRITE ME!");
-						break;
 					case Instruction.MC68000_TRAPV:
 						if(regs.sr & SF_Overflow)
 						{
@@ -2078,13 +2074,10 @@ class MC68000 : Processor
 
 					case Instruction.MC68010_RTD:
 						assert(false, "WRITE ME!");
-						break;
 					case Instruction.MC68010_MOVEC:
 						assert(false, "WRITE ME!");
-						break;
 					case Instruction.MC68010_MOVES:
 						assert(false, "WRITE ME!");
-						break;
 
 						//
 						// MC68020+ instructions
@@ -2092,12 +2085,10 @@ class MC68000 : Processor
 
 					case Instruction.MC68020_UNPK:
 						assert(false, "WRITE ME!");
-						break;
 
 					default:
 						// invalid opcode!
 						assert(false, "Unknown opcode!");
-						break;
 				}
 
 				static if(EnableDissassembly)
@@ -2229,6 +2220,7 @@ class MC68000 : Processor
 				break;
 			case Instruction.MC68000_JMP:
 				pOpcode.flags |= DisassembledOp.Flags.EndOfSequence;
+				goto case;
 			case Instruction.MC68000_JSR:
 				// immediate targets should be flagged as JumpTarget for the disassembler to follow
 				if(op.am0 == AddressingMode.AbsW || op.am0 == AddressingMode.AbsL)
@@ -2402,6 +2394,7 @@ class MC68000 : Processor
 				break;
 			case Instruction.MC68000_UNLK:
 				op.d0 += 8;
+				goto case;
 			case Instruction.MC68000_SWAP:
 				pOpcode.lineTemplate ~= " %s";
 
@@ -3193,6 +3186,7 @@ private:
 			case AddressingMode.IndPreDec:
 			case AddressingMode.IndPostInc:
 				d += 8;
+				goto case;
 			case AddressingMode.DReg:
 				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
 				arg.type = DisassembledOp.Arg.Type.Register;
