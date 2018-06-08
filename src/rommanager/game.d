@@ -1,7 +1,9 @@
 module demu.rommanager.game;
 
+import core.stdc.time : time_t;
+
 import std.datetime;
-import std.file;
+import std.file : read;
 
 enum Region
 {
@@ -48,7 +50,7 @@ struct RomInstance
 	string path;
 	size_t size;
 	uint hash;
-	std.datetime.time_t timestamp;
+	time_t timestamp;
 
 	string system;
 

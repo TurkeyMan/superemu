@@ -192,7 +192,7 @@ private:
 }
 else
 {
-	int main(string args[])
+	int main(string[] args)
 	{
 		MFInitParams init;
 		MFMain(&init);

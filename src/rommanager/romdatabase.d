@@ -6,8 +6,9 @@ import demu.rommanager.game;
 import demu.tools.sqlitedb;
 import demu.tools.error;
 
-import std.c.stdio;
+import core.stdc.stdio;
 import std.path;
+import std.file : read;
 
 class RomDatabase
 {
@@ -72,7 +73,7 @@ class RomDatabase
 	{
 		if(!rom)
 			return null;
-		return cast(ubyte[])std.file.read(rom.path);
+		return cast(ubyte[])read(rom.path);
 	}
 
 	const(SystemDesc)* FindSystem(string sysid)

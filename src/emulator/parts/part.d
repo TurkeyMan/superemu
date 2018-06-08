@@ -7,7 +7,7 @@ import demu.tools.util;
 import std.string;
 import std.conv;
 
-enum LogTarget
+enum LogTarget : int
 {
 	Any = -1,
 
@@ -119,13 +119,13 @@ struct DisassembledOp
 
 	StaticString!40 lineTemplate;
 	StaticString!16 instructionName;
-	uint programCode[8];
+	uint[8] programCode;
 	uint programOffset;
 	ubyte pcWords;
 	ubyte numArgs;
 	ubyte flags;
 	ubyte reserved;
-	Arg args[8];
+	Arg[8] args;
 
 	char[] GetAsm(char[] output, bool bShowProgramCode, Part part = null)
 	{
@@ -443,7 +443,7 @@ class Part
 		{
 			memset(codeDisassembled + (start >> 5), 0, sizeof(codeDisassembled[0]) * ((length+31) >> 5));
 
-			char args[32];
+			char[32] args;
 			sformat(args, "%X:%X", start, length);
 			SendDebugMessage("INVALIDATECODE", args);
 		}

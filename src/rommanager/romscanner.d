@@ -3,6 +3,8 @@ module demu.rommanager.romscanner;
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;
 
+import core.stdc.time;
+
 import std.file;
 import std.string;
 import std.path;
@@ -16,7 +18,7 @@ RomInstance[] ScanRoms(RomDatabase db, RomInstance[] cache)
 {
 	RomInstance[] roms;
 
-	void AddRom(string path, uint size, std.datetime.time_t modified)
+	void AddRom(string path, uint size, time_t modified)
 	{
 		// should we consider rejecting the file?
 		//...

@@ -12,6 +12,8 @@ import demu.emulator.parts.cpu.z80;
 import demu.emulator.parts.display.tms9918;
 import demu.emulator.parts.sound.sn76489;
 
+import std.file : read;
+
 class SegaGenesis : Machine
 {
 	this(const(RomInstance)* romDesc, RomDatabase db)
@@ -19,7 +21,7 @@ class SegaGenesis : Machine
 		super(romDesc, db);
 
 		// load the boot rom
-		pBIOS = cast(ubyte[])std.file.read("roms/gen/bios/GenesisBIOS.smd");
+		pBIOS = cast(ubyte[])read("roms/gen/bios/GenesisBIOS.smd");
 
 		// load the ROM image
 		pRom = db.LoadRom(romDesc);
@@ -524,6 +526,7 @@ protected:
 			case 0x2:
 				// VDP data
 				vdp.Write16(0, value);
+				goto case;
 			case 0x4:
 			case 0x6:
 				// VDP control

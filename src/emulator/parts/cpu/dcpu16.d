@@ -206,7 +206,7 @@ private:
 	//	Registers registers;
 	union
 	{
-		ushort r[11];
+		ushort[11] r;
 
 		struct
 		{

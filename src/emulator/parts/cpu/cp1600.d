@@ -224,7 +224,7 @@ class CP1600 : Processor
 					FLAGSZ(registers.r[target]);
 					break;
 				case COMR:
-					registers.r[target] = ~registers.r[target];
+					registers.r[target] = registers.r[target] ^ 0xFFFF;
 					FLAGSZ(registers.r[target]);
 					break;
 				case NEGR:
@@ -842,7 +842,7 @@ class CP1600 : Processor
 private:
 	struct Registers
 	{
-		ushort r[8]; // 8 general purpose registers
+		ushort[8] r; // 8 general purpose registers
 		ushort swd;  // status word
 	}
 
@@ -1024,7 +1024,7 @@ struct Opcode
     ubyte interruptible;
 }
 
-const Opcode sOpcodeTable[] =
+const Opcode[] sOpcodeTable =
 [
 	Opcode( Instruction.HLT,  AddressModes.Implied, 0, 0 ),
 	Opcode( Instruction.SDBD, AddressModes.Implied, 4, 0 ),

@@ -178,7 +178,7 @@ private:
 
 struct Registers
 {
-	ushort r[8]; // 8 general purpose registers
+	ushort[8] r; // 8 general purpose registers
 	ushort swd;  // status word
 }
 

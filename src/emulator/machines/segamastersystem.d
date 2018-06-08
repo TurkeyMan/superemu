@@ -11,6 +11,8 @@ import demu.emulator.parts.cpu.z80;
 import demu.emulator.parts.display.tms9918;
 import demu.emulator.parts.sound.sn76489;
 
+import std.file : read;
+
 class SegaMasterSystem : Machine
 {
 	enum Version
@@ -44,7 +46,7 @@ class SegaMasterSystem : Machine
 		else
 		{
 
-			bios = cast(ubyte[])std.file.read("roms/sms/bios/SMSBIOS_MK3.sms");
+			bios = cast(ubyte[])read("roms/sms/bios/SMSBIOS_MK3.sms");
 
 			ram = new ubyte[8*1024];
 			cartRam = new ubyte[32*1024];

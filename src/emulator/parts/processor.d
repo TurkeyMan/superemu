@@ -98,7 +98,7 @@ class Processor : Part
 			}
 
 			bLogExecution = false;
-			foreach(a; 0..LogTarget.NumTargets)
+			foreach(a; 0 .. cast(int)LogTarget.NumTargets)
 				bLogExecution = bLogExecution || logTargets[a] > 0;
 
 			return logTargets[target];
@@ -166,7 +166,7 @@ protected:
 				line.formatAppend("$%0*X", addressDigits, pc);
 
 				// add the program code?
-				char temp[64];
+				char[64] temp;
 				int maxProgramCodeLength = procInfo.maxOpwords * ((procInfo.opcodeWidth + 3) >> 2) + (procInfo.opcodeWidth > 8 ? procInfo.maxOpwords - 1 : 0);
 				size_t pcBytes = pLine.GetProgramCode(temp, procInfo.opcodeWidth).length;
 				temp[pcBytes++] = ']';

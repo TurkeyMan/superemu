@@ -4,12 +4,16 @@ import demu.tools.error;
 
 import etc.c.sqlite3;
 
+import core.stdc.string;
+
 import std.traits;
 import std.string;
+import std.conv : parse, to;
+import std.algorithm : cmp;
 
 const(char)[] dString(in char* cString)
 {
-	return cString[0..core.stdc.string.strlen(cString)];
+	return cString[0..strlen(cString)];
 }
 
 class SQLiteDB
@@ -104,7 +108,7 @@ class SQLiteDB
 		return ErrorCode.Success;
 	}
 
-	ErrorCode Update(RowStruct)(RowStruct items[], const(char)[] database = null, const(char)[] table = RowStruct.stringof)
+	ErrorCode Update(RowStruct)(RowStruct[] items, const(char)[] database = null, const(char)[] table = RowStruct.stringof)
 	{
 		assert(db != null, "No database loaded");
 
@@ -121,13 +125,13 @@ class SQLiteDB
 		return ErrorCode.Success;
 	}
 
-	ErrorCode Delete(RowStruct, K = PrimaryKeyType!RowStruct)(K items[], const(char)[] database = null, const(char)[] table = RowStruct.stringof)
+	ErrorCode Delete(RowStruct, K = PrimaryKeyType!RowStruct)(K[] items, const(char)[] database = null, const(char)[] table = RowStruct.stringof)
 	{
 		assert(db != null, "No database loaded");
 
 		foreach(ref item; items)
 		{
-			string query = format("DELETE FROM %s WHERE %s = '%s'", TableName!RowStruct(database, table), PrimaryKeyField!RowStruct, std.conv.to!string(item));
+			string query = format("DELETE FROM %s WHERE %s = '%s'", TableName!RowStruct(database, table), PrimaryKeyField!RowStruct, to!string(item));
 
 			char* pErrorMessage;
 			int e = sqlite3_exec(db, cast(char*)query.toStringz, null, cast(void*)this, &pErrorMessage);
@@ -168,14 +172,14 @@ class SQLiteDB
 					}
 					else
 					{
-						if(std.algorithm.cmp(m, col) == 0)
+						if(cmp(m, col) == 0)
 						{
 							const(char)* v = values[i];
 							const(char)[] val = dString(v);
 							static if(isSomeString!Item)
 								__traits(getMember, row, m) = val.idup;
 							else
-								__traits(getMember, row, m) = std.conv.parse!Item(val);
+								__traits(getMember, row, m) = parse!Item(val);
 							break;
 						}
 					}
@@ -224,7 +228,7 @@ template PrimaryKeyType(T)
 
 string PrimaryKeyValue(T)(ref T row)
 {
-	return std.conv.to!string(__traits(getMember, row, PrimaryKeyField!T));
+	return to!string(__traits(getMember, row, PrimaryKeyField!T));
 }
 
 string TableName(T = void)(const(char)[] database = null, const(char)[] name = T.stringof)
@@ -300,7 +304,7 @@ string ValueList(bool SkipPK = false, T)(ref const(T) row)
 			if(fields != null)
 				fields ~= ", ";
 
-			string value = std.conv.to!string(__traits(getMember, row, m));
+			string value = to!string(__traits(getMember, row, m));
 			fields ~= "'" ~ value ~ "'";
 		}
 	}
@@ -323,7 +327,7 @@ string UpdateList(bool SkipPK = false, T)(ref const(T) row)
 			if(fields != null)
 				fields ~= ", ";
 
-			string value = std.conv.to!string(__traits(getMember, row, m));
+			string value = to!string(__traits(getMember, row, m));
 			fields ~= "'" ~ m ~ "' = '" ~ value ~ "'";
 		}
 	}

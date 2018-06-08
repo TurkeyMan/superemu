@@ -1,6 +1,8 @@
 module demu.emulator.memmap;
 
 import std.string;
+import std.file : read;
+
 import demu.emulator.machine;
 
 alias ubyte delegate(uint address)				Read8Handler;
@@ -64,7 +66,7 @@ final class MemoryRange
 	int numBanks;             // number of banks the range can address
 
 	// auto-range support
-	ubyte romImage[];
+	ubyte[] romImage;
 	bool bManaged;
 }
 
@@ -88,7 +90,7 @@ final class MemMap
 		// debug stuff?
 	}
 
-	void RegisterMemoryCallbacks(MemoryCallbacks callbacks[])
+	void RegisterMemoryCallbacks(MemoryCallbacks[] callbacks)
 	{
 		this.callbacks = callbacks;
 	}
@@ -164,7 +166,7 @@ final class MemMap
 	// simple configuration functions
 	ubyte[] MountRomImageDirect(string filename, uint startAddress, uint flags = MemFlags.ReadOnly)
 	{
-		ubyte[] rom = cast(ubyte[])std.file.read("roms/col/bios/ColecoVision.rom");
+		ubyte[] rom = cast(ubyte[])read("roms/col/bios/ColecoVision.rom");
 
 		if(rom)
 		{
@@ -221,7 +223,7 @@ final class MemMap
 	}
 
 	// swap a ranged bank
-	void SwapBankDirect(uint startAddress, ubyte memory[], int bankID, uint flags = MemFlags.ReadWrite, uint mask = 0xFFFFFFFF)
+	void SwapBankDirect(uint startAddress, ubyte[] memory, int bankID, uint flags = MemFlags.ReadWrite, uint mask = 0xFFFFFFFF)
 	{
 	}
 
@@ -498,7 +500,7 @@ final class MemMap
 		// opportunity to trap invalid reads here
 		if(bTrapUndefinedAccess)
 		{
-			char buff[64];
+			char[64] buff;
 
 			static if(EnableMemTracking)
 			{
@@ -893,9 +895,9 @@ private:
 	Machine machine;
 
 	int addressBits;
-	Block memory[];
+	Block[] memory;
 
-	MemoryCallbacks callbacks[];
+	MemoryCallbacks[] callbacks;
 
 	Read8Handler ioRead;
 	Write8Handler ioWrite;
@@ -904,6 +906,6 @@ private:
 	Write32Handler illegalWrite;
 
 	// debug info
-	MemoryRange ranges[];
+	MemoryRange[] ranges;
 	bool bTrapUndefinedAccess;
 }

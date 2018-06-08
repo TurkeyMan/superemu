@@ -4,7 +4,7 @@ import demu.emulator.machine;
 import demu.emulator.parts.part;
 import demu.emulator.parts.processor;
 
-import std.algorithm;
+import std.algorithm : min;
 import core.sync.mutex;
 
 class SoundPart : Processor

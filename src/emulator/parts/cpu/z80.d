@@ -475,7 +475,7 @@ class Z80 : Processor
 					regs.Fn = 1;
 					break;
 				case CPL:
-					regs.A = ~regs.A;
+					regs.A = regs.A ^ 0xFF;
 					regs.Fh = 0x10;
 					regs.Fn = 1;
 					break;
@@ -488,24 +488,24 @@ class Z80 : Processor
 					{
 						if(!regs.Fc)                                           // Carry was clear
 						{
-							if( (high<=0x08) && (!regs.Fh) && (low>=0x0a) )
+							if((high<=0x08) && (!regs.Fh) && (low>=0x0a))
 								addVal = 0x06;
-							else if( (high<=0x09) && (regs.Fh) && (low<=0x03) )
+							else if((high<=0x09) && (regs.Fh) && (low<=0x03))
 								addVal = 0x06;
-							else if( (high>=0x0a) && (!regs.Fh) && (low<=0x09) )
+							else if((high>=0x0a) && (!regs.Fh) && (low<=0x09))
 								addVal = 0x60;
-							else if( (high>=0x09) && (!regs.Fh) && (low>=0x0a) )
+							else if((high>=0x09) && (!regs.Fh) && (low>=0x0a))
 								addVal = 0x66;
-							else if( (high>=0x0a) && (regs.Fh) && (low<=0x03) )
+							else if((high>=0x0a) && (regs.Fh) && (low<=0x03))
 								addVal = 0x66;
 						}
 						else                                                        // Carry was set
 						{
-							if( (high<=0x02) && (!regs.Fh) && (low<=0x09) )
+							if((high<=0x02) && (!regs.Fh) && (low<=0x09))
 								addVal = 0x60;
-							else if( (high<=0x02) && (!regs.Fh) && (low>=0x0a) )
+							else if((high<=0x02) && (!regs.Fh) && (low>=0x0a))
 								addVal = 0x66;
-							else if( (high<=0x03) && (regs.Fh) && (low<=0x03) )
+							else if((high<=0x03) && (regs.Fh) && (low<=0x03))
 								addVal = 0x66;
 						}
 						regs.Fc = 0;
@@ -1815,10 +1815,10 @@ struct Registers
 		}
 
 		// indexable 16 bit regs
-		ushort reg16[16];
+		ushort[16] reg16;
 
 		// indexable 8 bit regs - do not access these directly as its not endian safe - use GetReg8, SetReg8
-		ubyte raw_reg8[32];
+		ubyte[32] raw_reg8;
 	}
 
 	int IE, IE2; // interrupt enable

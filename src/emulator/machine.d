@@ -291,6 +291,12 @@ protected:
 		size = display.DisplaySize; // reject the resize by overwriting the requested size with the current size
 	}
 
+	uint ReleaseIRQ(Processor processor) nothrow
+	{
+		processor.SignalIRQ(0);
+		return 0;
+	}
+
 private:
 	Part[] parts;
 	Processor[] processors;
@@ -398,11 +404,5 @@ private:
 
 	void Write8Nop(uint address, ubyte value) const pure nothrow
 	{
-	}
-
-	uint ReleaseIRQ(Processor processor) nothrow
-	{
-		processor.SignalIRQ(0);
-		return 0;
 	}
 }

@@ -406,7 +406,7 @@ protected:
 	int displayWidth, displayHeight;
 	ubyte[] frameBuffer;
 
-	ubyte regMask[8];
+	ubyte[8] regMask;
 
 	// temp state data
 	ubyte* pNameTable;
@@ -421,10 +421,10 @@ protected:
 	// state data
 	ubyte[] vRam;
 
-	ubyte vdpRegs[32];
-	ubyte palette[32];
-	ushort cram[64];
-	ushort vsram[40];
+	ubyte[32] vdpRegs;
+	ubyte[32] palette;
+	ushort[64] cram;
+	ushort[40] vsram;
 
 	int scanLine;
 	ubyte lineCounter;
@@ -458,8 +458,10 @@ protected:
 					pColourTable = null;
 				else
 					pColourTable = vRam.ptr + vdpRegs[3]*0x40;
+				goto case;
 			case 4:
 				pPatternGenerator = vRam.ptr + (vdpRegs[4] & 0x7)*0x800;
+				goto case;
 			case 5:
 				pSpriteInfo = vRam.ptr + ((vdpRegs[5] & regMask[5]) << 7);
 				break;
@@ -802,7 +804,7 @@ static immutable uint[256] gTileTable =
 				t[a] |= 1 << (b*4);
 		}
 	}
-	return t[];
+	return t;
 }();
 
 static immutable RegisterInfo[] sRegInfo =
@@ -836,7 +838,7 @@ static immutable RegisterInfo[] sRegInfo =
 	RegisterInfo( "R23", 8, 0, null )
 ];
 
-static immutable ubyte gRegisterMasks[8][] =
+__gshared immutable ubyte[8][] gRegisterMasks =
 [
 	[ 0xFF, 0xFF, 0x0F, 0xFF, 0xFF, 0x7F, 0x07, 0xFF ], // no masking
 	[ 0xFF, 0xFF, 0x0E, 0xFF, 0xFF, 0x7E, 0x04, 0xFF ]  // SMS register masks

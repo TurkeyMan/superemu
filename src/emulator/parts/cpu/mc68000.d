@@ -812,6 +812,7 @@ class MC68000 : Processor
 						// push the PC on the stack
 						Push32(regs.pc);
 						// adjust relative address offset          break;
+						goto __BccTrue;
 					case Instruction.MC68000_BRA:
 					__BccTrue:
 						// there are some slight offsets depending on the addressing mode...
@@ -2336,7 +2337,7 @@ class MC68000 : Processor
 
 					// swap the second arg for the first arg, and remove the immediate decoration
 					size_t comma = pOpcode.lineTemplate.rFind(',') + 1;
-					char line[32];
+					char[32] line;
 					pOpcode.lineTemplate = sformat(line, "%%s%s, %%s", pOpcode.lineTemplate[comma..$]);
 				}
 				else
@@ -2345,7 +2346,7 @@ class MC68000 : Processor
 
 					// remove the immediate decoration from the first arg
 					size_t comma = pOpcode.lineTemplate.rFind(',');
-					char line[32];
+					char[32] line;
 					pOpcode.lineTemplate = sformat(line, "%%s %%s%s", pOpcode.lineTemplate[comma..$]);
 				}
 
@@ -3342,8 +3343,9 @@ private:
 				arg.arg.format("$%X", arg.value);
 				break;
 			case AddressingMode.Imm:
+			case AddressingMode.Imm16:
 				uint operand;
-				if(ds == DataSize.Long)
+				if(am == AddressingMode.Imm16 || ds == DataSize.Long)
 				{
 					operand = Read32(address);
 					pOpcode.programCode[pOpcode.pcWords++] = (operand >> 16);
@@ -3352,10 +3354,9 @@ private:
 				}
 				else
 				{
-					case AddressingMode.Imm16:
-						operand = Read16(address);
-						pOpcode.programCode[pOpcode.pcWords++] = operand;
-						address += 2;
+					operand = Read16(address);
+					pOpcode.programCode[pOpcode.pcWords++] = operand;
+					address += 2;
 				}
 
 				DisassembledOp.Arg* arg = &pOpcode.args[pOpcode.numArgs++];
@@ -3500,8 +3501,8 @@ struct Registers
 		}
 	}
 
-	Register d[8];
-	Register a[8];
+	Register[8] d;
+	Register[8] a;
 	uint usp;   // user stack pointer
 	uint isp;   // interrupt stack pointer
 	uint msp;   // master stack pointer
