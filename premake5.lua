@@ -1,9 +1,6 @@
-require "monodevelop"
-require "d"
-
 solution "DEmu"
 	configurations { "Debug", "Release", "UnitTest" }
-	platforms { "x32", "x64" }
+	platforms { "x86", "x64" }
 
 	-- include the fuji project...
 --	fujiDll = true
@@ -14,23 +11,31 @@ solution "DEmu"
 
 	project "DEmu"
 		kind "WindowedApp"
-		language "D"
+		language "C++"
 		files { "**.d", "**.md" }
 
 		objdir "obj/"
 		targetdir "bin/"
 --		debugdir "../"
 
+		buildoptions { "-transition=intpromote" }
+
 		configuration "Debug"
 			optimize "Off"
-			flags { "Symbols" }
+			symbols "On"
 
 		configuration "Release"
 			optimize "Speed"
+			symbols "On"
 
 		configuration "UnitTest"
 			optimize "Speed"
 			flags { "UnitTest" }
+
+		configuration { "platforms:x86" }
+			libdirs { "lib/x86/" }
+		configuration { "platforms:x64" }
+			libdirs { "lib/x64/" }
 
 		configuration {}
 

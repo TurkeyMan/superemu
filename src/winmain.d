@@ -11,51 +11,64 @@ import demu.emulator.display;
 import demu.rommanager.romdatabase;
 import demu.rommanager.game;
 
-struct MFInitParams
+//version = UseFuji;
+
+version (UseFuji)
 {
-	const(char)* pAppTitle;		//*< A title used to represent the application */
+	struct MFInitParams
+	{
+		const(char)* pAppTitle;		//*< A title used to represent the application */
 
-	void* hInstance;			//*< The WIN32 hInstance paramater supplied to WinMain() */
-	void* hWnd;					//*< An optional hWnd to a WIN32 window that will contain the viewport */
+		void* hInstance;			//*< The WIN32 hInstance paramater supplied to WinMain() */
+		void* hWnd;					//*< An optional hWnd to a WIN32 window that will contain the viewport */
 
-	const(char)* pCommandLine;	//*< Pointer to the command line string */
+		const(char)* pCommandLine;	//*< Pointer to the command line string */
 
-	int argc;					//*< The argc parameter supplied to main() */
-	const(char)** argv;			//*< The argv paramater supplied to main() */
-};
+		int argc;					//*< The argc parameter supplied to main() */
+		const(char)** argv;			//*< The argv paramater supplied to main() */
+	};
 
-extern (C) int MFMain(MFInitParams *pInitParams);
+	extern (C) int MFMain(MFInitParams *pInitParams);
 
-version(x)//Windows)
+	int main(string[] args)
+	{
+		MFInitParams init;
+		MFMain(&init);
+		return 0;
+	}
+}
+else
 {
 //	import std.c.windows.windows;
-	import win32.windows;
-	import win32.wingdi;
+//	import win32.windows;
+//	import win32.wingdi;
+	import core.sys.windows.windows;
+	import core.sys.windows.wingdi;
 
 	extern (Windows) int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-	    int result;
+		int result;
 
-	    void exceptionHandler(Throwable e)
-	    {
-	        throw e;
-	    }
+		void exceptionHandler(Throwable e)
+		{
+			throw e;
+		}
 
-	    try
-	    {
-	        Runtime.initialize(&exceptionHandler);
+		try
+		{
+			rt_init();
 
-	        result = myWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+			result = myWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
-	        Runtime.terminate(&exceptionHandler);
-	    }
-	    catch (Throwable o)		// catch any uncaught exceptions
-	    {
-	        MessageBox(null, cast(char *)o.toString(), "Error", MB_OK | MB_ICONEXCLAMATION);
-	        result = 0;		// failed
-	    }
+			rt_term();
+		}
+		catch (Throwable o)		// catch any uncaught exceptions
+		{
+			MessageBoxA(null, cast(char *)o.toString(), "Error", MB_OK | MB_ICONEXCLAMATION);
+			result = 0;		// failed
+		
 
-	    return result;
+		return result;
 	}
 	
 private:
@@ -64,9 +77,6 @@ private:
 
 	int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-//		MFInitParams init;
-//		MFMain(&init);
-
 		// init the database
 		db = new RomDatabase();
 
@@ -120,7 +130,7 @@ private:
 		return 0;
 	}
 
-	void Paint(HWND hWnd)
+	void Paint(HWND hWnd) nothrow @nogc
 	{
 		BITMAP bmi;
 		PAINTSTRUCT ps;
@@ -171,7 +181,7 @@ private:
 		MoveWindow(hWnd, pos.left, pos.top, r.right - r.left, r.bottom - r.top, FALSE);
 	}
 
-	extern(Windows) LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	extern(Windows) LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) nothrow @nogc
 	{
 		switch(msg)
 		{
@@ -187,15 +197,6 @@ private:
 			default:
 				return DefWindowProc(hWnd, msg, wParam, lParam);
 		}
-		return 0;
-	}
-}
-else
-{
-	int main(string[] args)
-	{
-		MFInitParams init;
-		MFMain(&init);
 		return 0;
 	}
 }
